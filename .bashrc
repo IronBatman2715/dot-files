@@ -1,32 +1,96 @@
+# If not running interactively, don't do anything
+case $- in
+  *i*) ;;
+    *) return;;
+esac
+
 ## History
 HISTTIMEFORMAT="%F %T " # format with time
+HISTCONTROL=ignoreboth # no duplicate lines or lines starting with space
+shopt -s histappend # append instead of overwriting
 
 # Limit to 100 lines
 HISTSIZE=100
-HISTFILESIZE=100
+HISTFILESIZE=200
 
-shopt -s histappend # append to bash history instead of overwriting
+## Misc
+shopt -s checkwinsize # update LINES and COLUMNS on window resize if necessary
 
 ## Aliases
-alias lsa="ls -a"
+
+# Add color support for common commands
+alias ls="ls --color"
+alias grep="grep --color"
+alias egrep="egrep --color"
+alias fgrep="fgrep --color"
+
+# Run aliases file if present
+if [ -f ~/.bash_aliases ]; then
+  . ~/.bash_aliases
+fi
 
 ## Colors
-blk="\[\033[01;30m\]"   # Black
-red="\[\033[01;31m\]"   # Red
-grn="\[\033[01;32m\]"   # Green
-ylw="\[\033[01;33m\]"   # Yellow
-blu="\[\033[01;34m\]"   # Blue
-pur="\[\033[01;35m\]"   # Purple
-cyn="\[\033[01;36m\]"   # Cyan
-wht="\[\033[01;37m\]"   # White
-clr="\[\033[00m\]"      # Reset
 
-## Prompt
+# Attribute codes:
+# 0=none 1=bold 4=underscore 5=blink 7=reverse 8=concealed
+# Text color codes:
+# 30=black 31=red 32=green 33=yellow 34=blue 35=magenta 36=cyan 37=white
+# Background color codes:
+# 40=black 41=red 42=green 43=yellow 44=blue 45=magenta 46=cyan 47=white
 
-function git_branch() {
-    if [ -d .git ] ; then
-        printf "%s " "($(git branch 2> /dev/null | awk '/\*/{print $2}'))";
-    fi
+# Non-printing color escape sequences
+function np_color() {
+  local PREFIX="033"
+
+  if [ -n "${2}" ]; then
+    # Color $2 with $1
+    echo -e "\\${PREFIX}[${1}m${2}"
+  elif [ -n "${1}" ]; then
+    # Echo specified color
+    echo -e "\\${PREFIX}[${1}m"
+  else
+    # Reset to default color
+    echo -e "\\${PREFIX}[0m"
+  fi
+}
+# Color escape sequences
+function color() {
+  local PREFIX="e"
+
+  if [ -n "${2}" ]; then
+    # Color $2 with $1
+    echo -e "\\${PREFIX}[${1}m${2}"
+  elif [ -n "${1}" ]; then
+    # Echo specified color
+    echo -e "\\${PREFIX}[${1}m"
+  else
+    # Reset to default color
+    echo -e "\\${PREFIX}[0m"
+  fi
 }
 
-export PS1="${grn}[\t] ${cyn}\$(git_branch)${blu}\W${clr}$ "
+## Prompt
+function git_branch() {
+  if [ -d .git ] ; then
+    printf "$(np_color)($(np_color 0\;36)%s$(np_color)) " "$(git branch 2> /dev/null | awk '/\*/{print $2}')";
+  fi
+}
+
+# export PS1="$grn[\t] \$(git_branch)$lbl\W$clr$ "
+export PS1="\$(np_color 0\;32)[\t] \$(git_branch)\$(np_color 1\;34)\W\$(np_color)$ "
+
+## Custom functions
+
+# Print system information (Based on: https://www.freecodecamp.org/news/bashrc-customization-guide/)
+function sysinfo() {
+  printf "$(color 0\;36)DATE$(color): %s\n" "$(date)"
+  #printf "$(color 0\;36)UPTIME$(color): %s\n" "$(uptime -p)"
+  printf "$(color 0\;36)USER@HOSTNAME$(color): %s\n" "$(echo $USERNAME@$HOSTNAME)"
+  #printf "$(color 0\;36)LOCAL IP ADDR$(color): %s\n" "$()"
+  printf "$(color 0\;36)PUBLIC IP ADDR$(color): %s\n" "$(curl -s ifconfig.me)"
+  #printf "$(color 0\;36)CPU$(color): %s\n" "$(awk -F: '/model name/{print $2}' | head -1)"
+  #printf "$(color 0\;36)MEMORY$(color): %s\n" "$(free -m -h | awk '/Mem/{print $3"/"$2}')"
+  #printf "$(color 0\;36)RESOLUTION$(color): %s\n" "$(xrandr | awk '/\*/{printf $1" "}')"
+  printf "$(color 0\;36)KERNEL$(color): %s\n" "$(uname -rms)"
+  #printf "$(color 0\;36)PACKAGES$(color): %s\n" "$(dpkg --get-selections | wc -l)"
+}
