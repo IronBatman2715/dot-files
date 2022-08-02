@@ -1,0 +1,14 @@
+[filter "lfs"]
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
+[user]
+	name = # USERNAME
+	email = # 12345678+USERNAME@users.noreply.github.com
+[core]
+  editor = # [PATH TO PREFERRED TEXT EDITOR] --wait
+[init]
+	defaultBranch = main
+[url "git@github.com:"]
+	insteadOf = https://github.com/

@@ -4,7 +4,15 @@ Configuration dot files
 
 ## Install
 
-### Git Bash for Windows
+### Manual parts
+
+1. Fill `.gitconfig` with proper values and move to home directory
+
+2. Copy `.gitattributes` to any git repositories
+
+### Auto-install script
+
+#### Git Bash for Windows
 
 1. Run Git Bash as an administrator
 
@@ -12,6 +20,6 @@ Configuration dot files
 
 3. Run supplied `install.sh` script
 
-### Linux
+#### Linux
 
 1. Run supplied `install.sh` script (may require root permissions)
