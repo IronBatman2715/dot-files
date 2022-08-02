@@ -91,6 +91,6 @@ function sysinfo() {
   #printf "$(color 0\;36)CPU$(color): %s\n" "$(awk -F: '/model name/{print $2}' | head -1)"
   #printf "$(color 0\;36)MEMORY$(color): %s\n" "$(free -m -h | awk '/Mem/{print $3"/"$2}')"
   #printf "$(color 0\;36)RESOLUTION$(color): %s\n" "$(xrandr | awk '/\*/{printf $1" "}')"
-  printf "$(color 0\;36)KERNEL$(color): %s\n" "$(uname -rms)"
+  printf "$(color 0\;36)KERNEL$(color): %s\n" "$(uname -srm)"
   #printf "$(color 0\;36)PACKAGES$(color): %s\n" "$(dpkg --get-selections | wc -l)"
 }
