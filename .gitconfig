@@ -7,7 +7,7 @@
 	name = # USERNAME
 	email = # 12345678+USERNAME@users.noreply.github.com
 [core]
-  editor = # [PATH TO PREFERRED TEXT EDITOR] --wait
+  editor = vim
 [init]
 	defaultBranch = main
 [url "git@github.com:"]
