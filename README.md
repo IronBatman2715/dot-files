@@ -6,9 +6,7 @@ Configuration dot files
 
 ### Manual parts
 
-1. Fill `.gitconfig` with proper values and move to home directory
-
-2. Copy `.gitattributes` to any git repositories
+1. Copy `.gitattributes` to any git repositories
 
 ### Auto-install script
 
