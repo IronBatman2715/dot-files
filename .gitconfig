@@ -1,11 +1,6 @@
-[filter "lfs"]
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
-	required = true
-	clean = git-lfs clean -- %f
 [user]
-	name = # USERNAME
-	email = # 12345678+USERNAME@users.noreply.github.com
+	name = ##USERNAME##
+	email = ##USER_ID##+##USERNAME##@users.noreply.github.com
 [core]
   editor = vim
 [init]
