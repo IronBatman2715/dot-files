@@ -1,9 +1,9 @@
 [user]
-	name = ##USERNAME##
-	email = ##USER_ID##+##USERNAME##@users.noreply.github.com
+  name = ##USERNAME##
+  email = ##USER_ID##+##USERNAME##@users.noreply.github.com
 [core]
   editor = vim
 [init]
-	defaultBranch = main
+  defaultBranch = main
 [url "git@github.com:"]
-	insteadOf = https://github.com/
+  insteadOf = https://github.com/
