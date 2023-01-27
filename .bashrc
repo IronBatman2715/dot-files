@@ -84,7 +84,7 @@ export PS1="\$(np_color 0\;32)[\t] \$(git_branch)\$(np_color 1\;34)\W\$(np_color
 # Print network information
 function netinfo() {
   printf "$(color 0\;36)DATE$(color): %s\n" "$(date)"
-  printf "$(color 0\;36)USER@HOSTNAME$(color): %s\n" "$(echo $USERNAME@$HOSTNAME)"
+  printf "$(color 0\;36)USER@HOSTNAME$(color): %s@%s\n" "$(whoami)" "$(hostname)"
   #printf "$(color 0\;36)LOCAL IP ADDR$(color): %s\n" "$()"
   printf "$(color 0\;36)PUBLIC IP ADDR$(color): %s\n" "$(curl -s ifconfig.me)"
 }
