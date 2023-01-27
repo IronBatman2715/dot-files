@@ -81,16 +81,10 @@ export PS1="\$(np_color 0\;32)[\t] \$(git_branch)\$(np_color 1\;34)\W\$(np_color
 
 ## Custom functions
 
-# Print system information (Based on: https://www.freecodecamp.org/news/bashrc-customization-guide/)
-function sysinfo() {
+# Print network information
+function netinfo() {
   printf "$(color 0\;36)DATE$(color): %s\n" "$(date)"
-  #printf "$(color 0\;36)UPTIME$(color): %s\n" "$(uptime -p)"
   printf "$(color 0\;36)USER@HOSTNAME$(color): %s\n" "$(echo $USERNAME@$HOSTNAME)"
   #printf "$(color 0\;36)LOCAL IP ADDR$(color): %s\n" "$()"
   printf "$(color 0\;36)PUBLIC IP ADDR$(color): %s\n" "$(curl -s ifconfig.me)"
-  #printf "$(color 0\;36)CPU$(color): %s\n" "$(awk -F: '/model name/{print $2}' | head -1)"
-  #printf "$(color 0\;36)MEMORY$(color): %s\n" "$(free -m -h | awk '/Mem/{print $3"/"$2}')"
-  #printf "$(color 0\;36)RESOLUTION$(color): %s\n" "$(xrandr | awk '/\*/{printf $1" "}')"
-  printf "$(color 0\;36)KERNEL$(color): %s\n" "$(uname -srm)"
-  #printf "$(color 0\;36)PACKAGES$(color): %s\n" "$(dpkg --get-selections | wc -l)"
 }
