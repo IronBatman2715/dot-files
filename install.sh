@@ -1,6 +1,6 @@
 #!/bin/bash
 
-projectDir=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+## HELPER FUNCTIONS ##
 
 function create_symlink() {
   src_path="$projectDir/$1"
@@ -27,27 +27,34 @@ function create_symlink() {
 }
 
 function parseJsonNum() {
-  VALUE_PATTERN="[0-9]*"
+  VALUE_PATTERN="[0-9]+"
   LINE_PATTERN="\"$1\":\s*${VALUE_PATTERN}\s*,?"
-  
+
   case $# in
     1)
-      cat /dev/stdin | grep -oE "$LINE_PATTERN" | grep -oE "$VALUE_PATTERN"
+      PARSED_NUMBER=$(cat /dev/stdin | grep -oE "$LINE_PATTERN" | grep -oE "$VALUE_PATTERN")
     ;;
     2)
-      grep -oE "$LINE_PATTERN" "$2" | grep -oE "$VALUE_PATTERN"
+      PARSED_NUMBER=$(grep -oE "$LINE_PATTERN" "$2" | grep -oE "$VALUE_PATTERN")
     ;;
     *)
-      echo "Must enter a key to parse and then either pipe in the JSON or enter the JSON file name!"
-      exit 1
+      echo "Must enter a key to parse and then either pipe in the JSON or enter the JSON file name!"; exit 1
     ;;
   esac
+
+  if [[ "$PARSED_NUMBER" =~ ^$VALUE_PATTERN$ ]]; then
+    echo "$PARSED_NUMBER"
+  else
+    echo "Parsed value is NOT a number!"; exit 1
+  fi
 }
 
+### MAIN ###
+
+projectDir=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
 tempDir="$projectDir/.temp"
 if [[ -e "$tempDir" ]]; then
-  echo "Delete or rename $tempDir. As this program needs to create a directory there."
-  exit 1
+  echo "Delete or rename $tempDir. As this program needs to create a directory there."; exit 1
 fi
 mkdir "$tempDir"
 
@@ -66,11 +73,13 @@ if [[ "$USERNAME" != "" ]]; then
     echo -e "    Sending request to \e[0;36mhttps://api.github.com/users/$USERNAME\e[0m"
     curl -so "$tempDir/gh_api_res.json" "https://api.github.com/users/$USERNAME"
   fi
+
   # eventually parse username from json...?
+
   USER_ID=$(cat "$tempDir/gh_api_res.json" | parseJsonNum id)
 
   echo -e "    Generating \e[0;36m$HOME/.gitconfig\e[0m based on \e[0;36m$projectDir/.gitconfig\e[0m"
-  cp "$projectDir/.gitconfig" "$tempDir/.gitconfig"
+  cp "$projectDir/template.gitconfig" "$tempDir/.gitconfig"
   sed -i "s/##USERNAME##/$USERNAME/g" "$tempDir/.gitconfig"
   sed -i "s/##USER_ID##/$USER_ID/g" "$tempDir/.gitconfig"
 
