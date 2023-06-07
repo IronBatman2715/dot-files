@@ -2,6 +2,7 @@
 alias lsa="ls -a"
 alias lsl="ls -l"
 alias lsla="ls -la"
+alias lslah="ls -lah"
 
 # git
 alias gs="git status"
