@@ -16,8 +16,8 @@ Configuration dot files
 
 2. Run `export MSYS=winsymlinks:nativestrict`
 
-3. Run supplied `install.sh` script
+3. Run supplied `install.bash` script
 
 #### Linux
 
-1. Run supplied `install.sh` script (may require root permissions)
+1. Run supplied `install.bash` script (may require root permissions)
