@@ -52,7 +52,6 @@ function parseJsonNum() {
   fi
 }
 
-
 function parseJsonStr() {
   # $1 = JSON key to parse
   # /dev/stdin = JSON as text
@@ -74,12 +73,25 @@ function parseJsonStr() {
 
 ### MAIN ###
 
+# Set DEBUG=1 to run in debug mode (i.e. "DEBUG=1 ./install.sh")
+
+if [[ $DEBUG != 1 ]]; then
+  DEBUG=0 # Normal operation
+fi
+if [[ $DEBUG == 1 ]]; then
+  echo "[DEBUG] Debug mode active!"
+fi
+
 projectDir=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
 tempDir="$projectDir/.temp"
 if [[ -e "$tempDir" ]]; then
-  echo "Delete or rename $tempDir. As this program needs to create a directory there."; exit 1
+  if [[ $DEBUG == 0 ]]; then
+    echo -e "Delete or rename \e[0;36$tempDir\e[0m]. As this program needs to create a temporary directory there."
+    exit 1
+  fi
+else
+  mkdir "$tempDir"
 fi
-mkdir "$tempDir"
 
 echo "Creating symlinks"
 create_symlink .bash_aliases
@@ -91,32 +103,46 @@ echo "Generating other files"
 
 echo "  Generating .gitconfig"
 read -p $'    Enter GitHub username [leave blank to skip \e[0;36m.gitconfig\e[0m]: ' USERNAME
-if [[ "$USERNAME" != "" ]]; then
+if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
   if [[ ! -e "$tempDir/gh_api_res.json" ]]; then
+    if [[ $DEBUG == 1 && "$USERNAME" == "" ]]; then
+      echo "[DEBUG] Must enter GitHub username at least one time to test further"; exit 1
+    fi
+
     echo -e "    Sending request to \e[0;36mhttps://api.github.com/users/$USERNAME\e[0m"
     curl -so "$tempDir/gh_api_res.json" "https://api.github.com/users/$USERNAME"
-  fi
 
-  # Verify username matches expected value
-  VERIFY_USERNAME=$(cat "$tempDir/gh_api_res.json" | parseJsonStr login)
-  if [[ "$USERNAME" != "$VERIFY_USERNAME" ]]; then
-    echo "Received mismatched username data. (Username requested: $USERNAME) (Username received: $VERIFY_USERNAME)"; exit 1
+    # Verify username matches expected value
+    VERIFY_USERNAME=$(cat "$tempDir/gh_api_res.json" | parseJsonStr login)
+    if [[ "$USERNAME" != "$VERIFY_USERNAME" ]]; then
+      echo "Received mismatched username data. (Username requested: $USERNAME) (Username received: $VERIFY_USERNAME)"
+      exit 1
+    fi
   fi
 
   USER_ID=$(cat "$tempDir/gh_api_res.json" | parseJsonNum id)
 
-  echo -e "    Generating \e[0;36m$HOME/.gitconfig\e[0m based on \e[0;36m$projectDir/.gitconfig\e[0m"
+  echo -e "    Generating \e[0;36m$HOME/.gitconfig\e[0m based on \e[0;36m$projectDir/template.gitconfig\e[0m"
   cp "$projectDir/template.gitconfig" "$tempDir/.gitconfig"
   sed -i "s/##USERNAME##/$USERNAME/g" "$tempDir/.gitconfig"
   sed -i "s/##USER_ID##/$USER_ID/g" "$tempDir/.gitconfig"
 
-  cat "$tempDir/.gitconfig" > "$HOME/.gitconfig"
+  if [[ $DEBUG == 1 ]]; then
+    echo -e "    [DEBUG] Skipping copy of \e[0;36m.gitconfig\e[0m to home directory"
+  else
+    cat "$tempDir/.gitconfig" > "$HOME/.gitconfig"
+  fi
 else
   echo -e "    Skipping \e[0;36m.gitconfig\e[0m"
 fi
 
+
 echo
-echo "Cleaning up temporary files"
-rm -r "$tempDir" # Comment this out during testing to prevent unecessary API calls
+if [[ $DEBUG == 1 ]]; then
+  echo "[DEBUG] Skipping cleaning up temporary files"
+else
+  echo "Cleaning up temporary files"
+  rm -r "$tempDir"
+fi
 
 echo "Install complete!"
