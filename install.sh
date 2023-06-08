@@ -3,8 +3,8 @@
 ## HELPER FUNCTIONS ##
 
 function create_symlink() {
-  src_path="$projectDir/$1"
-  dest_path="$HOME/$1"
+  local src_path="$projectDir/$1"
+  local dest_path="$HOME/$1"
 
   if [[ -e "$dest_path" ]]; then
     read -p $'  Something already exists at \e[0;36m'"$dest_path"$'\e[0m. Overwrite? [Y/n]: ' INPUT
@@ -27,8 +27,11 @@ function create_symlink() {
 }
 
 function parseJsonNum() {
-  VALUE_PATTERN="[0-9]+"
-  LINE_PATTERN="\"$1\":\s*${VALUE_PATTERN}\s*,?"
+  # $1 = JSON key to parse
+  # $2 OR /dev/stdin = JSON as text OR JSON file location (respectively)
+
+  local VALUE_PATTERN="[0-9]+"
+  local LINE_PATTERN="\"$1\":\s*${VALUE_PATTERN}\s*,?"
 
   case $# in
     1)
@@ -47,6 +50,26 @@ function parseJsonNum() {
   else
     echo "Parsed value is NOT a number!"; exit 1
   fi
+}
+
+
+function parseJsonStr() {
+  # $1 = JSON key to parse
+  # /dev/stdin = JSON as text
+
+  local key="$1"
+  local re="\"($key)\": \"([^\"]*)\""
+
+  while read -r l; do
+    if [[ $l =~ $re ]]; then
+      local name="${BASH_REMATCH[1]}"
+      local value="${BASH_REMATCH[2]}"
+      echo "$value"
+      return
+    fi
+  done
+
+  echo "Could not parse string!"; exit 1
 }
 
 ### MAIN ###
@@ -74,7 +97,11 @@ if [[ "$USERNAME" != "" ]]; then
     curl -so "$tempDir/gh_api_res.json" "https://api.github.com/users/$USERNAME"
   fi
 
-  # eventually parse username from json...?
+  # Verify username matches expected value
+  VERIFY_USERNAME=$(cat "$tempDir/gh_api_res.json" | parseJsonStr login)
+  if [[ "$USERNAME" != "$VERIFY_USERNAME" ]]; then
+    echo "Received mismatched username data. (Username requested: $USERNAME) (Username received: $VERIFY_USERNAME)"; exit 1
+  fi
 
   USER_ID=$(cat "$tempDir/gh_api_res.json" | parseJsonNum id)
 
@@ -90,7 +117,6 @@ fi
 
 echo
 echo "Cleaning up temporary files"
-# Comment this out during testing to prevent unecessary API calls
-rm -r "$tempDir"
+rm -r "$tempDir" # Comment this out during testing to prevent unecessary API calls
 
 echo "Install complete!"
