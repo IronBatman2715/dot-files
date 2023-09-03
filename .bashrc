@@ -85,7 +85,6 @@ function git_branch() {
   fi
 }
 
-# export PS1="$grn[\t] \$(git_branch)$lbl\W$clr$ "
 export PS1="\$(np_color 0\;32)[\t] \$(git_branch)\$(np_color 1\;34)\W\$(np_color)$ "
 
 ## Custom functions
