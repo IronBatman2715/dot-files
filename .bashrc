@@ -49,32 +49,28 @@ fi
 
 # Non-printing color escape sequences
 function np_color() {
-  local PREFIX="033"
-
   if [ -n "${2}" ]; then
     # Color $2 with $1
-    echo -e "\\${PREFIX}[${1}m${2}"
+    echo -e "\\033[${1}m${2}"
   elif [ -n "${1}" ]; then
     # Echo specified color
-    echo -e "\\${PREFIX}[${1}m"
+    echo -e "\\033[${1}m"
   else
     # Reset to default color
-    echo -e "\\${PREFIX}[0m"
+    echo -e "\\033[0m"
   fi
 }
 # Color escape sequences
 function color() {
-  local PREFIX="e"
-
   if [ -n "${2}" ]; then
     # Color $2 with $1
-    echo -e "\\${PREFIX}[${1}m${2}"
+    echo -e "\\e[${1}m${2}"
   elif [ -n "${1}" ]; then
     # Echo specified color
-    echo -e "\\${PREFIX}[${1}m"
+    echo -e "\\e[${1}m"
   else
     # Reset to default color
-    echo -e "\\${PREFIX}[0m"
+    echo -e "\\e[0m"
   fi
 }
 
