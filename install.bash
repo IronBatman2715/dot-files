@@ -73,7 +73,7 @@ function parseJsonStr() {
 
 ### MAIN ###
 
-# Set DEBUG=1 to run in debug mode (i.e. "DEBUG=1 ./install.sh")
+# Set DEBUG=1 to run in debug mode (i.e. "DEBUG=1 ./install.bash")
 
 if [[ $DEBUG != 1 ]]; then
   DEBUG=0 # Normal operation
