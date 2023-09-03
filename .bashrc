@@ -96,3 +96,10 @@ function netinfo() {
   #printf "$(color 0\;36)LOCAL IP ADDR$(color): %s\n" "$()"
   printf "$(color 0\;36)PUBLIC IP ADDR$(color): %s\n" "$(curl -s ifconfig.me)"
 }
+
+# Run setups for installed programs if present.
+# 
+# WILL NEED TO MOVE SETUPS THERE MANUALLY AS PROGRAMS TYPICALLY WRITE HERE OR TO .bash_profile
+if [ -f ~/.bash_program_setups ]; then
+  . ~/.bash_program_setups
+fi

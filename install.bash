@@ -96,6 +96,7 @@ fi
 echo "Creating symlinks"
 create_symlink .bash_aliases
 create_symlink .bash_profile
+create_symlink .bash_program_setups
 create_symlink .bashrc
 create_symlink .vimrc
 
