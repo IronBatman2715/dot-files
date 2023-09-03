@@ -1,3 +1,6 @@
+# cd
+alias ..="cd .."
+
 # ls
 alias lsa="ls -a"
 alias lsl="ls -l"
