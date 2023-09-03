@@ -47,50 +47,67 @@ fi
 # Background color codes:
 # 40=black 41=red 42=green 43=yellow 44=blue 45=magenta 46=cyan 47=white
 
-# Non-printing color escape sequences
-function np_color() {
-  if [ -n "${2}" ]; then
-    # Color $2 with $1
-    echo -e "\\033[${1}m${2}"
-  elif [ -n "${1}" ]; then
-    # Echo specified color
-    echo -e "\\033[${1}m"
-  else
-    # Reset to default color
-    echo -e "\\033[0m"
-  fi
-}
 # Color escape sequences
 function color() {
-  if [ -n "${2}" ]; then
-    # Color $2 with $1
-    echo -e "\\e[${1}m${2}"
-  elif [ -n "${1}" ]; then
-    # Echo specified color
-    echo -e "\\e[${1}m"
-  else
-    # Reset to default color
-    echo -e "\\e[0m"
-  fi
+  case $# in
+    2)
+      # Color $2 with $1
+      printf "\e[%sm%s" "$1" "$2"
+      ;;
+    1)
+      # Echo specified color
+      printf "\e[%sm" "$1"
+      ;;
+    *)
+      # Reset to default color
+      printf "\e[0m"
+      ;;
+  esac
 }
 
 ## Prompt
+
+# Print git branch if current directory is a git repository
 function git_branch() {
   if [ -d .git ] ; then
-    printf "$(np_color)($(np_color 0\;36)%s$(np_color)) " "$(git branch 2> /dev/null | awk '/\*/{print $2}')";
+    printf "$(np_color)($(np_color '0;36')%s$(np_color)) " "$(__git_ps1 '%s')"
   fi
 }
+# Bash prompt Non-printing color escape sequences
+function np_color() {
+  local output=''
+  case $# in
+    2)
+      # Color $2 with $1
+      output="$(color $1 $2)"
+      ;;
+    1)
+      # Echo specified color
+      output="$(color $1)"
+      ;;
+    *)
+      # Reset to default color
+      output="$(color)"
+      ;;
+  esac
 
-export PS1="\$(np_color 0\;32)[\t] \$(git_branch)\$(np_color 1\;34)\W\$(np_color)$ "
+  printf '\[%s\]' "$output"
+}
+
+function build_prompt() {
+  PS1="$(np_color '0;32')[\t] $(git_branch)$(np_color '1;34')\W$(np_color)\$ "
+}
+
+PROMPT_COMMAND=build_prompt
 
 ## Custom functions
 
 # Print network information
 function netinfo() {
-  printf "$(color 0\;36)DATE$(color): %s\n" "$(date)"
-  printf "$(color 0\;36)USER@HOSTNAME$(color): %s@%s\n" "$(whoami)" "$(hostname)"
-  #printf "$(color 0\;36)LOCAL IP ADDR$(color): %s\n" "$()"
-  printf "$(color 0\;36)PUBLIC IP ADDR$(color): %s\n" "$(curl -s ifconfig.me)"
+  printf "$(color '0;36')DATE$(color): %s\n" "$(date)"
+  printf "$(color '0;36')USER@HOSTNAME$(color): %s@%s\n" "$(whoami)" "$(hostname)"
+  #printf "$(color '0;36')LOCAL IP ADDR$(color): %s\n" "$()"
+  printf "$(color '0;36')PUBLIC IP ADDR$(color): %s\n" "$(curl -s ifconfig.me)"
 }
 
 # Run setups for installed programs if present.
