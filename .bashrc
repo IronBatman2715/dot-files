@@ -67,34 +67,35 @@ function color() {
 
 ## Prompt
 
-# Print git branch if current directory is a git repository
-function git_branch() {
-  if [ -d .git ] ; then
-    printf "$(np_color)($(np_color '0;36')%s$(np_color)) " "$(__git_ps1 '%s')"
-  fi
-}
-# Bash prompt Non-printing color escape sequences
-function np_color() {
-  local output=''
-  case $# in
-    2)
-      # Color $2 with $1
-      output="$(color $1 $2)"
-      ;;
-    1)
-      # Echo specified color
-      output="$(color $1)"
-      ;;
-    *)
-      # Reset to default color
-      output="$(color)"
-      ;;
-  esac
-
-  printf '\[%s\]' "$output"
-}
 
 function build_prompt() {
+  # Bash prompt Non-printing color escape sequences
+  function np_color() {
+    local output=''
+    case $# in
+      2)
+        # Color $2 with $1
+        output="$(color $1 $2)"
+        ;;
+      1)
+        # Echo specified color
+        output="$(color $1)"
+        ;;
+      *)
+        # Reset to default color
+        output="$(color)"
+        ;;
+    esac
+
+    printf '\[%s\]' "$output"
+  }
+  # Print git branch if current directory is a git repository
+  function git_branch() {
+    if [ -d .git ] ; then
+      printf "$(np_color)($(np_color '0;36')%s$(np_color)) " "$(__git_ps1 '%s')"
+    fi
+  }
+  
   PS1="$(np_color '0;32')[\t] $(git_branch)$(np_color '1;34')\W$(np_color)\$ "
 }
 
