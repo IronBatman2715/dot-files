@@ -96,7 +96,7 @@ function build_prompt() {
     fi
   }
   
-  PS1="$(np_color '0;32')[\t] $(git_branch)$(np_color '1;34')\W$(np_color)\$ "
+  PS1="$(np_color '0;32')[\t] $(git_branch)$(np_color '37;44')\u@\H$(np_color) $(np_color '1;34')\W$(np_color)\$ "
 }
 
 PROMPT_COMMAND=build_prompt
