@@ -105,12 +105,33 @@ PROMPT_COMMAND=build_prompt
 
 # Print network information
 function netinfo() {
-  local local_ip_info="$(ip route get 1.1.1.1)"
+  local local_ip_addr=''
+  local router_local_ip_addr=''
+  case "$OSTYPE" in
+    "linux-gnu")
+      local local_ip_info="$(ip route get 1.1.1.1)"
+
+      local_ip_addr="$(echo "$local_ip_info" | head -1 | cut -f7 -d' ')"
+      router_local_ip_addr="$(echo "$local_ip_info" | head -1 | cut -f3 -d' ')"
+      ;;
+    "msys")
+      # Bash for Windows (MinGW)
+      local local_ip_info="$(ipconfig)"
+
+      local_ip_addr="$(echo "$local_ip_info" | grep 'IPv4 Address' | awk '{print $NF}')"
+      router_local_ip_addr="$(echo "$local_ip_info" | grep -A 1 'Default Gateway' | tail -n 1 | awk '{print $1}')"
+      ;;
+    *)
+      # Unknown OS
+      echo "Could not match $OSTYPE"
+      exit 1
+      ;;
+  esac
 
   printf "$(color '0;36')DATE$(color): %s\n" "$(date)"
   printf "$(color '0;36')USER@HOSTNAME$(color): %s@%s\n" "$(whoami)" "$(hostname)"
-  printf "$(color '0;36')LOCAL IP ADDR$(color): %s\n" "$(echo "$local_ip_info" | head -1 | cut -f7 -d' ')"
-  printf "$(color '0;36')ROUTER LOCAL IP ADDR$(color): %s\n" "$(echo "$local_ip_info" | head -1 | cut -f3 -d' ')"
+  printf "$(color '0;36')LOCAL IP ADDR$(color): %s\n" "$local_ip_addr"
+  printf "$(color '0;36')ROUTER LOCAL IP ADDR$(color): %s\n" "$router_local_ip_addr"
   printf "$(color '0;36')PUBLIC IP ADDR$(color): %s\n" "$(curl -s ipinfo.io/ip)"
 }
 
