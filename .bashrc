@@ -100,15 +100,15 @@ function _build_prompt() {
 
   function _display_status_code() {
     if [[ $exit_code == 0 ]] ; then
-      # Last command was successful. Leave default color
-      printf "$(_np_color)"
+      # Last command was successful. Normal and green
+      printf "$(_np_color '0;32')"
     else
-      # Last command FAILED. Mark bold and red
+      # Last command FAILED. Bold and red
       printf "$(_np_color '1;31')"
     fi
   }
   
-  PS1="$(_np_color '0;32')[\t] $(_git_branch)$(_np_color '37;44')\u@\H$(_np_color) $(_np_color '1;34')\W$(_display_status_code)\$$(_np_color) "
+  PS1="$(_display_status_code)[\t] $(_git_branch)$(_np_color '37;44')\u@\H$(_np_color) $(_np_color '1;34')\W$(_np_color)\$ "
 }
 
 PROMPT_COMMAND=_build_prompt
