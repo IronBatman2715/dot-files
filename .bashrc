@@ -68,11 +68,11 @@ function color() {
 ## Prompt
 
 
-function build_prompt() {
+function _build_prompt() {
   local exit_code="$?"
 
   # Bash prompt Non-printing color escape sequences
-  function np_color() {
+  function _np_color() {
     local output=''
     case $# in
       2)
@@ -92,26 +92,26 @@ function build_prompt() {
     printf '\[%s\]' "$output"
   }
   # Print git branch if current directory is a git repository
-  function git_branch() {
+  function _git_branch() {
     if [ -d .git ] ; then
-      printf "$(np_color)($(np_color '0;36')%s$(np_color)) " "$(__git_ps1 '%s')"
+      printf "$(_np_color)($(_np_color '0;36')%s$(_np_color)) " "$(__git_ps1 '%s')"
     fi
   }
 
-  function display_status_code() {
+  function _display_status_code() {
     if [[ $exit_code == 0 ]] ; then
       # Last command was successful. Leave default color
-      printf "$(np_color)"
+      printf "$(_np_color)"
     else
       # Last command FAILED. Mark bold and red
-      printf "$(np_color '1;31')"
+      printf "$(_np_color '1;31')"
     fi
   }
   
-  PS1="$(np_color '0;32')[\t] $(git_branch)$(np_color '37;44')\u@\H$(np_color) $(np_color '1;34')\W$(display_status_code)\$$(np_color) "
+  PS1="$(_np_color '0;32')[\t] $(_git_branch)$(_np_color '37;44')\u@\H$(_np_color) $(_np_color '1;34')\W$(_display_status_code)\$$(_np_color) "
 }
 
-PROMPT_COMMAND=build_prompt
+PROMPT_COMMAND=_build_prompt
 
 ## Custom functions
 
