@@ -117,6 +117,11 @@ PROMPT_COMMAND=_build_prompt
 
 # Print network information
 function netinfo() {
+  local output=''
+
+  output+="$(color '0;36')DATE$(color): $(date)\n"
+  output+="$(color '0;36')USER@HOSTNAME$(color): $(whoami)@$(hostname)\n"
+
   local local_ip_addr=''
   local router_local_ip_addr=''
   case "$OSTYPE" in
@@ -140,11 +145,11 @@ function netinfo() {
       ;;
   esac
 
-  printf "$(color '0;36')DATE$(color): %s\n" "$(date)"
-  printf "$(color '0;36')USER@HOSTNAME$(color): %s@%s\n" "$(whoami)" "$(hostname)"
-  printf "$(color '0;36')LOCAL IP ADDR$(color): %s\n" "$local_ip_addr"
-  printf "$(color '0;36')ROUTER LOCAL IP ADDR$(color): %s\n" "$router_local_ip_addr"
-  printf "$(color '0;36')PUBLIC IP ADDR$(color): %s\n" "$(curl -s ipinfo.io/ip)"
+  output+="$(color '0;36')LOCAL IP ADDR$(color): $local_ip_addr\n"
+  output+="$(color '0;36')ROUTER LOCAL IP ADDR$(color): $router_local_ip_addr\n"
+  output+="$(color '0;36')PUBLIC IP ADDR$(color): $(curl -s ipinfo.io/ip)\n"
+
+  printf "$output"
 }
 
 # Run setups for installed programs if present.
