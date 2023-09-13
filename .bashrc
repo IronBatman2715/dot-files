@@ -91,14 +91,9 @@ function _build_prompt() {
 
     printf '\[%s\]' "$output"
   }
-  # Print git branch if current directory is a git repository
-  function _git_branch() {
-    if [ -d .git ] ; then
-      printf "$(_np_color)($(_np_color '0;36')%s$(_np_color)) " "$(__git_ps1 '%s')"
-    fi
-  }
 
-  function _display_status_code() {
+  # Set color to indicate status of last command
+  function _status_code_color() {
     if [[ $exit_code == 0 ]] ; then
       # Last command was successful. Normal and green
       printf "$(_np_color '0;32')"
@@ -107,8 +102,15 @@ function _build_prompt() {
       printf "$(_np_color '1;31')"
     fi
   }
+
+  # Print git branch if current directory is a git repository
+  function _git_branch() {
+    if [ -d .git ] ; then
+      printf "$(_np_color)($(_np_color '0;36')%s$(_np_color)) " "$(__git_ps1 '%s')"
+    fi
+  }
   
-  PS1="$(_display_status_code)[\t] $(_git_branch)$(_np_color '37;44')\u@\H$(_np_color) $(_np_color '1;34')\W$(_np_color)\$ "
+  PS1="$(_status_code_color)[\t] $(_git_branch)$(_np_color '37;44')\u@\H$(_np_color) $(_np_color '1;34')\W$(_np_color)\$ "
 }
 
 PROMPT_COMMAND=_build_prompt
