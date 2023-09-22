@@ -130,14 +130,17 @@ if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
       echo "Could not execute either 'curl' or 'wget' to fetch GitHub data. Please install one of the two."
       exit 1
     fi
+  fi
 
-
-    # Verify username matches expected value
-    VERIFY_USERNAME=$(cat "$tempDir/gh_api_res.json" | parseJsonStr login)
-    if [[ "$USERNAME" != "$VERIFY_USERNAME" ]]; then
-      echo "Received mismatched username data. (Username requested: $USERNAME) (Username received: $VERIFY_USERNAME)"
-      exit 1
-    fi
+  # Verify username matches expected value
+  VERIFY_USERNAME=$(cat "$tempDir/gh_api_res.json" | parseJsonStr login)
+  if [[ $DEBUG == 1 && "$USERNAME" == "" ]]; then
+    echo "    [DEBUG] Setting \$USERNAME to cached value"
+    USERNAME="$VERIFY_USERNAME"
+  fi
+  if [[ "$USERNAME" != "$VERIFY_USERNAME" ]]; then
+    echo "Received mismatched username data. (Username requested: $USERNAME) (Username received: $VERIFY_USERNAME)"
+    exit 1
   fi
 
   USER_ID=$(cat "$tempDir/gh_api_res.json" | parseJsonNum id)
