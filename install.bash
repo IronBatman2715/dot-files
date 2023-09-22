@@ -107,7 +107,7 @@ create_file_symlink .vimrc
 
 echo "Generating other files"
 
-echo -e "  Generating .gitconfig (this will overwrite \e[0;36m$HOME/.gitconfig\e[0m if present)"
+echo -e "  Generating .gitconfig (this will \e[0;33moverwrite\e[0m \e[0;36m$HOME/.gitconfig\e[0m if present)"
 read -p $'    Enter GitHub username (leave blank to skip \e[0;36m.gitconfig\e[0m): ' USERNAME
 if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
   if [[ ! -e "$tempDir/gh_api_res.json" ]]; then
