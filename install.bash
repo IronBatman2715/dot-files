@@ -2,9 +2,14 @@
 
 ## HELPER FUNCTIONS ##
 
-function create_symlink() {
+function create_file_symlink() {
   local src_path="$projectDir/$1"
   local dest_path="$HOME/$1"
+
+  if [[ ! -f "$src_path" ]]; then
+    echo -e "  Creating empty \e[0;36m$src_path\e[0m"
+    touch $src_path
+  fi
 
   if [[ -e "$dest_path" ]]; then
     read -p $'  Something already exists at \e[0;36m'"$dest_path"$'\e[0m. Overwrite? [Y/n]: ' INPUT
@@ -93,12 +98,12 @@ else
   mkdir "$tempDir"
 fi
 
-echo "Creating symlinks"
-create_symlink .bash_aliases
-create_symlink .bash_profile
-create_symlink .bash_program_setups
-create_symlink .bashrc
-create_symlink .vimrc
+echo "Creating file symlinks"
+create_file_symlink .bash_aliases
+create_file_symlink .bash_profile
+create_file_symlink .bash_program_setups
+create_file_symlink .bashrc
+create_file_symlink .vimrc
 
 echo "Generating other files"
 
