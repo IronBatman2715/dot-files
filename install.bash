@@ -117,10 +117,14 @@ if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
 
     echo -e "    Sending request to \e[0;36mhttps://api.github.com/users/$USERNAME\e[0m"
     if command -v curl &> /dev/null; then
-      echo "    [DEBUG] Using 'curl'"
+      if [[ $DEBUG == 1 ]]; then
+        echo "    [DEBUG] Using 'curl'"
+      fi
       curl -so "$tempDir/gh_api_res.json" "https://api.github.com/users/$USERNAME"
     elif command -v wget &> /dev/null; then
-      echo "    [DEBUG] Using 'wget'"
+      if [[ $DEBUG == 1 ]]; then
+        echo "    [DEBUG] Using 'wget'"
+      fi
       wget -qO "$tempDir/gh_api_res.json" "https://api.github.com/users/$USERNAME"
     else
       echo "Could not execute either 'curl' or 'wget' to fetch GitHub data. Please install one of the two."
