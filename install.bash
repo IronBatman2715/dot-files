@@ -116,7 +116,17 @@ if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
     fi
 
     echo -e "    Sending request to \e[0;36mhttps://api.github.com/users/$USERNAME\e[0m"
-    curl -so "$tempDir/gh_api_res.json" "https://api.github.com/users/$USERNAME"
+    if command -v curl &> /dev/null; then
+      echo "    [DEBUG] Using 'curl'"
+      curl -so "$tempDir/gh_api_res.json" "https://api.github.com/users/$USERNAME"
+    elif command -v wget &> /dev/null; then
+      echo "    [DEBUG] Using 'wget'"
+      wget -qO "$tempDir/gh_api_res.json" "https://api.github.com/users/$USERNAME"
+    else
+      echo "Could not execute either 'curl' or 'wget' to fetch GitHub data. Please install one of the two."
+      exit 1
+    fi
+
 
     # Verify username matches expected value
     VERIFY_USERNAME=$(cat "$tempDir/gh_api_res.json" | parseJsonStr login)
