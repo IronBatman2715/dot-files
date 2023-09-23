@@ -39,14 +39,31 @@ function create_file_symlink() {
   fi
 
   if [[ -e "$dest_path" ]]; then
-    if yn_prompt "  Something already exists at \e[0;36m$dest_path\e[0m. Overwrite?" 0; then
-      echo -e "    Overwriting \e[0;36m$dest_path\e[0m"
-      rm -rf "$dest_path"
+    if [[ -L "$dest_path" ]]; then
+      if [[ $(realpath "$dest_path") == "$src_path" ]]; then
+        echo -e "  \e[0;36m$dest_path\e[0m is already a symlink to \e[0;36m$src_path\e[0m."
+        return
+      else
+        if yn_prompt "  \e[0;36m$dest_path\e[0m is already a symlink BUT it points to a different location. Overwrite?" 0; then
+          echo -e "    Overwriting \e[0;36m$dest_path\e[0m"
+          rm -rf "$dest_path"
 
-      echo -e "    Creating symlink at \e[0;36m$dest_path\e[0m pointing to \e[0;36m$src_path\e[0m"
-      ln -s "$src_path" "$dest_path"
+          echo -e "    Creating symlink at \e[0;36m$dest_path\e[0m pointing to \e[0;36m$src_path\e[0m"
+          ln -s "$src_path" "$dest_path"
+        else
+          echo -e "    Skipped install of \e[0;36m$1\e[0m"
+        fi
+      fi
     else
-      echo -e "    Skipped install of \e[0;36m$1\e[0m"
+      if yn_prompt "  Something already exists at \e[0;36m$dest_path\e[0m. Overwrite?" 0; then
+        echo -e "    Overwriting \e[0;36m$dest_path\e[0m"
+        rm -rf "$dest_path"
+
+        echo -e "    Creating symlink at \e[0;36m$dest_path\e[0m pointing to \e[0;36m$src_path\e[0m"
+        ln -s "$src_path" "$dest_path"
+      else
+        echo -e "    Skipped install of \e[0;36m$1\e[0m"
+      fi
     fi
   else
     echo -e "  Creating symlink at \e[0;36m$dest_path\e[0m pointing to \e[0;36m$src_path\e[0m"
