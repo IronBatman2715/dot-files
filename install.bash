@@ -124,6 +124,14 @@ if [[ $DEBUG == 1 ]]; then
   echo "[DEBUG] Debug mode active!"
 fi
 
+
+if [[ "$OSTYPE" == "msys" ]]; then
+  if ! yn_prompt "Confirm that you have read \e[0;36mREADME\e[0m installation notes for Git Bash for Windows (MinGW)?"; then
+    echo -e "  \e[0;31mExiting\e[0m due to unconfirmed setup"
+    exit 1
+  fi
+fi
+
 projectDir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 tempDir="$projectDir/.temp"
 if [[ -e "$tempDir" ]]; then
