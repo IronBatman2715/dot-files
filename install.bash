@@ -2,6 +2,33 @@
 
 ## HELPER FUNCTIONS ##
 
+function yn_prompt() {
+  # $1: prompt string
+  # $2: default value. 0 for yes, 1 for no. If not set, defaults to no
+
+  local yn_brackets="["
+  if [[ $2 == 0 ]]; then
+    yn_brackets+="Y/n"
+  else
+    yn_brackets+="y/N"
+  fi
+  yn_brackets+="]: "
+
+
+  read -p "$(echo -e "$1 $yn_brackets")" INPUT
+
+  while :; do
+    if [[ ${INPUT,,} == "y"|| ($INPUT == "" && $2 == 0) ]]; then
+      return 0
+    elif [[ ${INPUT,,} == "n"|| ($INPUT == "" && $2 != 0) ]]; then
+      return 1
+    else
+      echo -e "\e[0;31mInvalid entry\e[0m: $INPUT"
+      read -p "$(echo -e "Try again $yn_brackets")" INPUT
+    fi
+  done
+}
+
 function create_file_symlink() {
   local src_path="$projectDir/$1"
   local dest_path="$HOME/$1"
@@ -12,18 +39,14 @@ function create_file_symlink() {
   fi
 
   if [[ -e "$dest_path" ]]; then
-    read -p $'  Something already exists at \e[0;36m'"$dest_path"$'\e[0m. Overwrite? [Y/n]: ' INPUT
-
-    if [[ $INPUT == "" || ${INPUT,,} == "y" ]]; then
+    if yn_prompt "  Something already exists at \e[0;36m$dest_path\e[0m. Overwrite?" 0; then
       echo -e "    Overwriting \e[0;36m$dest_path\e[0m"
       rm -rf "$dest_path"
 
       echo -e "    Creating symlink at \e[0;36m$dest_path\e[0m pointing to \e[0;36m$src_path\e[0m"
       ln -s "$src_path" "$dest_path"
-    elif [[ ${INPUT,,} == "n" ]]; then
-      echo -e "    Skipped install of \e[0;36m$1\e[0m"
     else
-      echo -e "    \e[0;31mInvalid entry\e[0m. Skipping install of \e[0;36m$1\e[0m"
+      echo -e "    Skipped install of \e[0;36m$1\e[0m"
     fi
   else
     echo -e "  Creating symlink at \e[0;36m$dest_path\e[0m pointing to \e[0;36m$src_path\e[0m"
