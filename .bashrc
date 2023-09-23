@@ -77,11 +77,11 @@ function _build_prompt() {
     case $# in
       2)
         # Color $2 with $1
-        output="$(color $1 $2)"
+        output="$(color "$1" "$2")"
         ;;
       1)
         # Echo specified color
-        output="$(color $1)"
+        output="$(color "$1")"
         ;;
       *)
         # Reset to default color

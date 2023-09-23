@@ -8,7 +8,7 @@ function create_file_symlink() {
 
   if [[ ! -f "$src_path" ]]; then
     echo -e "  Creating empty \e[0;36m$src_path\e[0m"
-    touch $src_path
+    touch "$src_path"
   fi
 
   if [[ -e "$dest_path" ]]; then
@@ -16,10 +16,10 @@ function create_file_symlink() {
 
     if [[ $INPUT == "" || ${INPUT,,} == "y" ]]; then
       echo -e "    Overwriting \e[0;36m$dest_path\e[0m"
-      rm -rf $dest_path
+      rm -rf "$dest_path"
 
       echo -e "    Creating symlink at \e[0;36m$dest_path\e[0m pointing to \e[0;36m$src_path\e[0m"
-      ln -s $src_path $dest_path
+      ln -s "$src_path" "$dest_path"
     elif [[ ${INPUT,,} == "n" ]]; then
       echo -e "    Skipped install of \e[0;36m$1\e[0m"
     else
@@ -27,7 +27,7 @@ function create_file_symlink() {
     fi
   else
     echo -e "  Creating symlink at \e[0;36m$dest_path\e[0m pointing to \e[0;36m$src_path\e[0m"
-    ln -s $src_path $dest_path
+    ln -s "$src_path" "$dest_path"
   fi
 }
 
@@ -87,7 +87,7 @@ if [[ $DEBUG == 1 ]]; then
   echo "[DEBUG] Debug mode active!"
 fi
 
-projectDir=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+projectDir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 tempDir="$projectDir/.temp"
 if [[ -e "$tempDir" ]]; then
   if [[ $DEBUG == 0 ]]; then
