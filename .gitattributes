@@ -18,7 +18,7 @@
 *.sh text eol=lf
 
 ###############################
-# Git Large File System (LFS) #
+# Git Large File Storage (LFS) #
 ###############################
 
 # Archives
