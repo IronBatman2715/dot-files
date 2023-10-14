@@ -155,6 +155,8 @@ echo "Generating other files"
 echo -e "  Generating .gitconfig (this will \e[0;33moverwrite\e[0m \e[0;36m$HOME/.gitconfig\e[0m if present)"
 read -p $'    Enter GitHub username (leave blank to skip \e[0;36m.gitconfig\e[0m): ' USERNAME
 if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
+
+  # Fetch github user data
   if [[ ! -e "$tempDir/gh_api_res.json" ]]; then
     if [[ $DEBUG == 1 && "$USERNAME" == "" ]]; then
       echo "[DEBUG] Must enter GitHub username at least one time to test further"; exit 1
@@ -177,7 +179,7 @@ if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
     fi
   fi
 
-  # Verify username matches expected value
+  # Verify username matches github user data
   VERIFY_USERNAME=$(cat "$tempDir/gh_api_res.json" | parseJsonStr login)
   if [[ $DEBUG == 1 && "$USERNAME" == "" ]]; then
     echo "    [DEBUG] Setting \$USERNAME to cached value"
@@ -190,6 +192,7 @@ if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
 
   USER_ID=$(cat "$tempDir/gh_api_res.json" | parseJsonNum id)
 
+  # Generate .gitconfig in temp directory and parse in values
   echo -e "    Generating \e[0;36m$HOME/.gitconfig\e[0m based on \e[0;36m$projectDir/template.gitconfig\e[0m"
   cp "$projectDir/template.gitconfig" "$tempDir/.gitconfig"
   sed -i "s/##USERNAME##/$USERNAME/g" "$tempDir/.gitconfig"
