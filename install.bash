@@ -199,7 +199,9 @@ if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
 
   read -p $'    Enter Git text editor executable (leave blank to default to \e[0;36mvim\e[0m): ' GIT_EDITOR
   if [[ "$GIT_EDITOR" == "" ]]; then
-    echo "    [DEBUG] Setting \$GIT_EDITOR to default value"
+    if [[ $DEBUG == 1 ]]; then
+      echo "    [DEBUG] Setting \$GIT_EDITOR to default value"
+    fi
     GIT_EDITOR="vim"
   fi
 
