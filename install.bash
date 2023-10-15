@@ -192,11 +192,18 @@ if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
 
   USER_ID=$(cat "$tempDir/gh_api_res.json" | parseJsonNum id)
 
+  read -p $'    Enter Git text editor executable (leave blank to default to \e[0;36mvim\e[0m): ' GIT_EDITOR
+  if [[ "$GIT_EDITOR" == "" ]]; then
+    echo "    [DEBUG] Setting \$GIT_EDITOR to default value"
+    GIT_EDITOR="vim"
+  fi
+
   # Generate .gitconfig in temp directory and parse in values
   echo -e "    Generating \e[0;36m$HOME/.gitconfig\e[0m based on \e[0;36m$projectDir/template.gitconfig\e[0m"
   cp "$projectDir/template.gitconfig" "$tempDir/.gitconfig"
   sed -i "s/##USERNAME##/$USERNAME/g" "$tempDir/.gitconfig"
   sed -i "s/##USER_ID##/$USER_ID/g" "$tempDir/.gitconfig"
+  sed -i "s/##GIT_EDITOR##/$GIT_EDITOR/g" "$tempDir/.gitconfig"
 
   if [[ $DEBUG == 1 ]]; then
     echo -e "    [DEBUG] Skipping copy of \e[0;36m.gitconfig\e[0m to home directory"

@@ -7,7 +7,7 @@
   name = ##USERNAME##
   email = ##USER_ID##+##USERNAME##@users.noreply.github.com
 [core]
-  editor = vim
+  editor = ##GIT_EDITOR##
 [init]
   defaultBranch = main
 [url "git@github.com:"]
