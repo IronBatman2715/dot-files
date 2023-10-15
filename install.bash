@@ -131,7 +131,9 @@ if [[ "$OSTYPE" == "msys" ]]; then
     exit 1
   fi
 
-  echo "[DEBUG] Setting MSYS environment variable so symlinks work as expected."
+  if [[ $DEBUG == 1 ]]; then
+    echo "[DEBUG] Setting MSYS environment variable so symlinks work as expected."
+  fi
   export MSYS=winsymlinks:nativestrict
 fi
 
