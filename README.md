@@ -14,11 +14,9 @@ Configuration dot files
 
 #### Git Bash for Windows
 
-1. Run Git Bash as an administrator
+1. Run Git Bash as an administrator (this is required for symlinks to work properly)
 
-2. Run `export MSYS=winsymlinks:nativestrict`
-
-3. Run supplied `install.bash` script
+2. Run supplied `install.bash` script
 
 #### Linux
 

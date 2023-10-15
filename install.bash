@@ -130,6 +130,9 @@ if [[ "$OSTYPE" == "msys" ]]; then
     echo -e "  \e[0;31mExiting\e[0m due to unconfirmed setup"
     exit 1
   fi
+
+  echo "[DEBUG] Setting MSYS environment variable so symlinks work as expected."
+  export MSYS=winsymlinks:nativestrict
 fi
 
 projectDir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
