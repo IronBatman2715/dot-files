@@ -30,8 +30,11 @@ function yn_prompt() {
 }
 
 function create_file_symlink() {
-  local src_path="$projectDir/$1"
-  local dest_path="$HOME/$1"
+  # $1 = source file path
+  # $2 = destination file path
+
+  local src_path="$1"
+  local dest_path="$2"
 
   if [[ ! -f "$src_path" ]]; then
     echo -e "  Creating empty \e[0;36m$src_path\e[0m"
@@ -149,11 +152,11 @@ else
 fi
 
 echo "Creating file symlinks"
-create_file_symlink .bash_aliases
-create_file_symlink .bash_profile
-create_file_symlink .bash_program_setups
-create_file_symlink .bashrc
-create_file_symlink .vimrc
+create_file_symlink "$projectDir/.bash_aliases"         "$HOME/.bash_aliases"
+create_file_symlink "$projectDir/.bash_profile"         "$HOME/.bash_profile"
+create_file_symlink "$projectDir/.bash_program_setups"  "$HOME/.bash_program_setups"
+create_file_symlink "$projectDir/.bashrc"               "$HOME/.bashrc"
+create_file_symlink "$projectDir/.vimrc"                "$HOME/.vimrc"
 
 echo "Generating other files"
 
