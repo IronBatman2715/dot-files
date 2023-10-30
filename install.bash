@@ -197,6 +197,15 @@ if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
 
   USER_ID=$(cat "$tempDir/gh_api_res.json" | parseJsonNum id)
 
+  DO_GIT_LFS=1
+  if yn_prompt "    Enable Git-LFS in \e[0;36m$HOME/.gitconfig\e[0m? (still need to install on your system)" 0; then
+    if [[ $DEBUG == 1 ]]; then
+      echo "    [DEBUG] Enabling Git-LFS"
+    fi
+
+    DO_GIT_LFS=0
+  fi
+
   read -p $'    Enter Git text editor executable (leave blank to default to \e[0;36mvim\e[0m): ' GIT_EDITOR
   if [[ "$GIT_EDITOR" == "" ]]; then
     if [[ $DEBUG == 1 ]]; then
@@ -208,6 +217,10 @@ if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
   # Generate .gitconfig in temp directory and parse in values
   echo -e "    Generating \e[0;36m$HOME/.gitconfig\e[0m based on \e[0;36m$projectDir/template.gitconfig\e[0m"
   cp "$projectDir/template.gitconfig" "$tempDir/.gitconfig"
+  if [[ $DO_GIT_LFS == 0 ]]; then
+    GIT_LFS_STR=$'[filter "lfs"]\n  smudge = git-lfs smudge -- %f\n  process = git-lfs filter-process\n  required = true\n  clean = git-lfs clean -- %f'
+    echo "$GIT_LFS_STR" >> "$tempDir/.gitconfig"
+  fi
   sed -i "s/##USERNAME##/$USERNAME/g" "$tempDir/.gitconfig"
   sed -i "s/##USER_ID##/$USER_ID/g" "$tempDir/.gitconfig"
   sed -i "s/##GIT_EDITOR##/$GIT_EDITOR/g" "$tempDir/.gitconfig"
