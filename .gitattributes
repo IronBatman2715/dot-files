@@ -1,8 +1,8 @@
 # Source: https://rehansaeed.com/gitattributes-best-practices/
 
-###############################
-# Git Line Endings            #
-###############################
+################################
+# Git Line Endings             #
+################################
 
 # Set default behaviour to automatically normalize line endings.
 * text=auto
@@ -17,9 +17,9 @@
 *.bash text eol=lf
 *.sh text eol=lf
 
-###############################
+################################
 # Git Large File Storage (LFS) #
-###############################
+################################
 
 # Archives
 *.7z filter=lfs diff=lfs merge=lfs -text
