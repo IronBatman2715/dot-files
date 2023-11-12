@@ -3,6 +3,8 @@
   email = ##USER_ID##+##USERNAME##@users.noreply.github.com
 [core]
   editor = ##GIT_EDITOR##
+[fetch]
+  prune = true
 [init]
   defaultBranch = main
 [url "git@github.com:"]
