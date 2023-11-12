@@ -226,6 +226,22 @@ if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
   fi
   sed -i "s/##USERNAME##/$USERNAME/g" "$tempDir/.gitconfig"
   sed -i "s/##USER_ID##/$USER_ID/g" "$tempDir/.gitconfig"
+  AUTO_CRLF=''
+  case "$OSTYPE" in
+    "linux-gnu")
+      AUTO_CRLF='input'
+      ;;
+    "msys")
+      # Bash for Windows (MinGW)
+      AUTO_CRLF='true'
+      ;;
+    *)
+      # Unknown OS
+      echo "Could not match $OSTYPE"
+      exit 1
+      ;;
+  esac
+  sed -i "s/##AUTO_CRLF##/$AUTO_CRLF/g" "$tempDir/.gitconfig"
   sed -i "s/##GIT_EDITOR##/$GIT_EDITOR/g" "$tempDir/.gitconfig"
 
   if [[ $DEBUG == 1 ]]; then

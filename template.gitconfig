@@ -2,6 +2,7 @@
   name = ##USERNAME##
   email = ##USER_ID##+##USERNAME##@users.noreply.github.com
 [core]
+  autocrlf = ##AUTO_CRLF##
   editor = ##GIT_EDITOR##
 [fetch]
   prune = true
