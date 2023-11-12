@@ -2,6 +2,10 @@
 
 Configuration dot files
 
+Supported environments:
+- Git Bash for Windows
+- GNU Linux
+
 ## Install
 
 ### Manual parts
