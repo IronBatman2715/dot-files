@@ -216,6 +216,25 @@ if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
     DO_GIT_LFS=0
   fi
 
+  OS_TYPE_DESCRIPTOR=''
+  AUTO_CRLF=''
+  case "$OSTYPE" in
+    "linux-gnu")
+      OS_TYPE_DESCRIPTOR="GNU Linux"
+      AUTO_CRLF='input'
+      ;;
+    "msys")
+      OS_TYPE_DESCRIPTOR="Git Bash for Windows (MinGW)"
+      AUTO_CRLF='true'
+      ;;
+    *)
+      # Unknown OS
+      echo "Could not match \"$OSTYPE\" to a supported system"
+      exit 1
+      ;;
+  esac
+  echo -e "    Identified this as a \e[0;36m$OS_TYPE_DESCRIPTOR\e[0m system. Setting \e[0;36mcore.autocrlf\e[0m to \e[0;36m$AUTO_CRLF\e[0m."
+
   read -rp $'    Enter Git text editor executable (leave blank to default to \e[0;36mvim\e[0m): ' GIT_EDITOR
   if [[ "$GIT_EDITOR" == "" ]]; then
     if [[ $DEBUG == 1 ]]; then
@@ -233,21 +252,6 @@ if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
   fi
   sed -i "s/##USERNAME##/$USERNAME/g" "$tempDir/.gitconfig"
   sed -i "s/##USER_ID##/$USER_ID/g" "$tempDir/.gitconfig"
-  AUTO_CRLF=''
-  case "$OSTYPE" in
-    "linux-gnu")
-      AUTO_CRLF='input'
-      ;;
-    "msys")
-      # Bash for Windows (MinGW)
-      AUTO_CRLF='true'
-      ;;
-    *)
-      # Unknown OS
-      echo "Could not match $OSTYPE"
-      exit 1
-      ;;
-  esac
   sed -i "s/##AUTO_CRLF##/$AUTO_CRLF/g" "$tempDir/.gitconfig"
   sed -i "s/##GIT_EDITOR##/$GIT_EDITOR/g" "$tempDir/.gitconfig"
 
