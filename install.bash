@@ -134,9 +134,27 @@ if [[ $DEBUG == 1 ]]; then
   echo "[DEBUG] Debug mode active!"
 fi
 
+OS_TYPE_DESCRIPTOR=''
+AUTO_CRLF=''
+case "$OSTYPE" in
+  "linux-gnu")
+    OS_TYPE_DESCRIPTOR="GNU Linux"
+    AUTO_CRLF='input'
+    ;;
+  "msys")
+    OS_TYPE_DESCRIPTOR="Git Bash for Windows (MinGW)"
+    AUTO_CRLF='true'
+    ;;
+  *)
+    # Unknown OS
+    echo "Could not match \"$OSTYPE\" to a supported system"
+    exit 1
+    ;;
+esac
+echo -e "Identified this as a \e[0;36m$OS_TYPE_DESCRIPTOR\e[0m system."
 
 if [[ "$OSTYPE" == "msys" ]]; then
-  if ! yn_prompt "Confirm that you have read \e[0;36mREADME\e[0m installation notes for Git Bash for Windows (MinGW)?"; then
+  if ! yn_prompt "Confirm that you have read \e[0;36mREADME\e[0m installation notes for $OS_TYPE_DESCRIPTOR?"; then
     echo -e "  \e[0;31mExiting\e[0m due to unconfirmed setup"
     exit 1
   fi
@@ -216,24 +234,12 @@ if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
     DO_GIT_LFS=0
   fi
 
-  OS_TYPE_DESCRIPTOR=''
   AUTO_CRLF=''
   case "$OSTYPE" in
-    "linux-gnu")
-      OS_TYPE_DESCRIPTOR="GNU Linux"
-      AUTO_CRLF='input'
-      ;;
-    "msys")
-      OS_TYPE_DESCRIPTOR="Git Bash for Windows (MinGW)"
-      AUTO_CRLF='true'
-      ;;
-    *)
-      # Unknown OS
-      echo "Could not match \"$OSTYPE\" to a supported system"
-      exit 1
-      ;;
+    "linux-gnu") AUTO_CRLF='input';;
+    "msys")      AUTO_CRLF='true';;
   esac
-  echo -e "    Identified this as a \e[0;36m$OS_TYPE_DESCRIPTOR\e[0m system. Setting \e[0;36mcore.autocrlf\e[0m to \e[0;36m$AUTO_CRLF\e[0m."
+  echo -e "    Setting \e[0;36mcore.autocrlf\e[0m to \e[0;36m$AUTO_CRLF\e[0m since this is a \e[0;36m$OS_TYPE_DESCRIPTOR\e[0m system. "
 
   read -rp $'    Enter Git text editor executable (default: \e[0;36mvim\e[0m): ' GIT_EDITOR
   if [[ "$GIT_EDITOR" == "" ]]; then
