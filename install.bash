@@ -235,7 +235,7 @@ if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
   esac
   echo -e "    Identified this as a \e[0;36m$OS_TYPE_DESCRIPTOR\e[0m system. Setting \e[0;36mcore.autocrlf\e[0m to \e[0;36m$AUTO_CRLF\e[0m."
 
-  read -rp $'    Enter Git text editor executable (leave blank to default to \e[0;36mvim\e[0m): ' GIT_EDITOR
+  read -rp $'    Enter Git text editor executable (default: \e[0;36mvim\e[0m): ' GIT_EDITOR
   if [[ "$GIT_EDITOR" == "" ]]; then
     if [[ $DEBUG == 1 ]]; then
       echo "    [DEBUG] Setting \$GIT_EDITOR to default value"
