@@ -15,7 +15,7 @@ function yn_prompt() {
   yn_brackets+="]: "
 
 
-  read -p "$(echo -e "$1 $yn_brackets")" INPUT
+  read -rp "$(echo -e "$1 $yn_brackets")" INPUT
 
   while :; do
     if [[ ${INPUT,,} == "y"|| ($INPUT == "" && $2 == 0) ]]; then
@@ -24,7 +24,7 @@ function yn_prompt() {
       return 1
     else
       echo -e "\e[0;31mInvalid entry\e[0m: $INPUT"
-      read -p "$(echo -e "Try again $yn_brackets")" INPUT
+      read -rp "$(echo -e "Try again $yn_brackets")" INPUT
     fi
   done
 }
@@ -161,7 +161,7 @@ create_file_symlink "$projectDir/.vimrc"                "$HOME/.vimrc"
 echo "Generating other files"
 
 echo -e "  Generating .gitconfig (this will \e[0;33moverwrite\e[0m \e[0;36m$HOME/.gitconfig\e[0m if present)"
-read -p $'    Enter GitHub username (leave blank to skip \e[0;36m.gitconfig\e[0m): ' USERNAME
+read -rp $'    Enter GitHub username (leave blank to skip \e[0;36m.gitconfig\e[0m): ' USERNAME
 if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
 
   # Fetch github user data
@@ -209,7 +209,7 @@ if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
     DO_GIT_LFS=0
   fi
 
-  read -p $'    Enter Git text editor executable (leave blank to default to \e[0;36mvim\e[0m): ' GIT_EDITOR
+  read -rp $'    Enter Git text editor executable (leave blank to default to \e[0;36mvim\e[0m): ' GIT_EDITOR
   if [[ "$GIT_EDITOR" == "" ]]; then
     if [[ $DEBUG == 1 ]]; then
       echo "    [DEBUG] Setting \$GIT_EDITOR to default value"
