@@ -99,21 +99,28 @@ function parseJsonNum() {
 
 function parseJsonStr() {
   # $1 = JSON key to parse
-  # /dev/stdin = JSON as text
+  # $2 OR /dev/stdin = JSON as text OR JSON file location (respectively)
 
-  local key="$1"
-  local re="\"($key)\": \"([^\"]*)\""
+  local VALUE_PATTERN="[A-Za-z0-9_-]+"
+  local LINE_PATTERN="\"$1\":\s*\"${VALUE_PATTERN}\"\s*,?"
 
-  while read -r l; do
-    if [[ $l =~ $re ]]; then
-      local name="${BASH_REMATCH[1]}"
-      local value="${BASH_REMATCH[2]}"
-      echo "$value"
-      return
-    fi
-  done
+  case $# in
+    1)
+      PARSED_STRING=$(cat /dev/stdin | grep -oE "$LINE_PATTERN" | grep -oE "$VALUE_PATTERN" | tail -1)
+    ;;
+    2)
+      PARSED_STRING=$(grep -oE "$LINE_PATTERN" "$2" | grep -oE "$VALUE_PATTERN" | tail -1)
+    ;;
+    *)
+      echo "Must enter a key to parse and then either pipe in the JSON or enter the JSON file name!"; exit 1
+    ;;
+  esac
 
-  echo "Could not parse string!"; exit 1
+  if [[ "$PARSED_STRING" =~ ^$VALUE_PATTERN$ ]]; then
+    echo "$PARSED_STRING"
+  else
+    echo "Parsed value is NOT a string!"; exit 1
+  fi
 }
 
 ### MAIN ###
@@ -188,7 +195,7 @@ if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
   fi
 
   # Verify username matches github user data
-  VERIFY_USERNAME=$(cat "$tempDir/gh_api_res.json" | parseJsonStr login)
+  VERIFY_USERNAME=$(parseJsonStr login "$tempDir/gh_api_res.json")
   if [[ $DEBUG == 1 && "$USERNAME" == "" ]]; then
     echo "    [DEBUG] Setting \$USERNAME to cached value"
     USERNAME="$VERIFY_USERNAME"
@@ -198,7 +205,7 @@ if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
     exit 1
   fi
 
-  USER_ID=$(cat "$tempDir/gh_api_res.json" | parseJsonNum id)
+  USER_ID=$(parseJsonNum id "$tempDir/gh_api_res.json")
 
   DO_GIT_LFS=1
   if yn_prompt "    Enable Git-LFS in \e[0;36m$HOME/.gitconfig\e[0m? (still need to install on your system)" 0; then
