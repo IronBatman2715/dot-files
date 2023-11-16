@@ -50,7 +50,7 @@ function create_file_symlink() {
 
   local prompt="  Something already exists at \e[0;36m$symlink_path\e[0m. Overwrite?"
   if [[ -L "$symlink_path" ]]; then
-    local symlink_real_path=$(realpath "$symlink_path")
+    local symlink_real_path="$(realpath "$symlink_path")"
     if [[ "$symlink_real_path" == "$src_path" ]]; then
       echo -e "  \e[0;36m$symlink_path\e[0m is already a symlink to \e[0;36m$src_path\e[0m. Skipping"
       return
