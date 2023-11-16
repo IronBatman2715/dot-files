@@ -31,41 +31,41 @@ function yn_prompt() {
 
 function create_file_symlink() {
   # $1 = source file path
-  # $2 = destination file path
+  # $2 = symlink file path
 
   local src_path="$1"
-  local dest_path="$2"
+  local symlink_path="$2"
 
   if [[ ! -f "$src_path" ]]; then
     echo -e "  Creating empty \e[0;36m$src_path\e[0m"
     touch "$src_path"
   fi
 
-  # If nothing exists at $dest_path, simply create symlink and return
-  if [[ ! -e "$dest_path" ]]; then
-    echo -e "  Creating symlink at \e[0;36m$dest_path\e[0m pointing to \e[0;36m$src_path\e[0m"
-    ln -s "$src_path" "$dest_path"
+  # If nothing exists at $symlink_path, simply create symlink and return
+  if [[ ! -e "$symlink_path" ]]; then
+    echo -e "  Creating symlink at \e[0;36m$symlink_path\e[0m pointing to \e[0;36m$src_path\e[0m"
+    ln -s "$src_path" "$symlink_path"
     return
   fi
 
-  local prompt="  Something already exists at \e[0;36m$dest_path\e[0m. Overwrite?"
-  if [[ -L "$dest_path" ]]; then
-    local dest_real_path=$(realpath "$dest_path")
-    if [[ "$dest_real_path" == "$src_path" ]]; then
-      echo -e "  \e[0;36m$dest_path\e[0m is already a symlink to \e[0;36m$src_path\e[0m. Skipping"
+  local prompt="  Something already exists at \e[0;36m$symlink_path\e[0m. Overwrite?"
+  if [[ -L "$symlink_path" ]]; then
+    local symlink_real_path=$(realpath "$symlink_path")
+    if [[ "$symlink_real_path" == "$src_path" ]]; then
+      echo -e "  \e[0;36m$symlink_path\e[0m is already a symlink to \e[0;36m$src_path\e[0m. Skipping"
       return
     fi
 
     # Update prompt with new information
-    prompt="  \e[0;36m$dest_path\e[0m is already a symlink BUT it points to a different location (\e[0;36m$dest_real_path\e[0m). Overwrite?"
+    prompt="  \e[0;36m$symlink_path\e[0m is already a symlink BUT it points to a different location (\e[0;36m$symlink_real_path\e[0m). Overwrite?"
   fi
 
   if yn_prompt "$prompt" 0; then
-    echo -e "    Overwriting \e[0;36m$dest_path\e[0m"
-    rm -rf "$dest_path"
+    echo -e "    Overwriting \e[0;36m$symlink_path\e[0m"
+    rm -rf "$symlink_path"
 
-    echo -e "    Creating symlink at \e[0;36m$dest_path\e[0m pointing to \e[0;36m$src_path\e[0m"
-    ln -s "$src_path" "$dest_path"
+    echo -e "    Creating symlink at \e[0;36m$symlink_path\e[0m pointing to \e[0;36m$src_path\e[0m"
+    ln -s "$src_path" "$symlink_path"
   else
     echo -e "    Skipped install of \e[0;36m$1\e[0m"
   fi
