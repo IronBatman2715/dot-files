@@ -164,6 +164,7 @@ if [[ "$OSTYPE" == "msys" ]]; then
   fi
   export MSYS=winsymlinks:nativestrict
 fi
+echo
 
 projectDir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 tempDir="$projectDir/.temp"
