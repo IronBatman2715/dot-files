@@ -135,15 +135,12 @@ if [[ $DEBUG == 1 ]]; then
 fi
 
 OS_TYPE_DESCRIPTOR=''
-AUTO_CRLF=''
 case "$OSTYPE" in
   "linux-gnu")
     OS_TYPE_DESCRIPTOR="GNU Linux"
-    AUTO_CRLF='input'
     ;;
   "msys")
     OS_TYPE_DESCRIPTOR="Git Bash for Windows (MinGW)"
-    AUTO_CRLF='true'
     ;;
   *)
     # Unknown OS
