@@ -266,7 +266,7 @@ if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
   if [[ $DEBUG == 1 ]]; then
     echo -e "    [DEBUG] Skipping copy of \e[0;36m.gitconfig\e[0m to home directory"
   else
-    cat "$tempDir/.gitconfig" > "$HOME/.gitconfig"
+    cp "$tempDir/.gitconfig" "$HOME/.gitconfig"
   fi
 else
   echo -e "    Skipping \e[0;36m.gitconfig\e[0m"
