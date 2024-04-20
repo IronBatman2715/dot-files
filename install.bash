@@ -183,6 +183,7 @@ echo "Generating other files"
 echo -e "  Generating .gitconfig (this will \e[0;33moverwrite\e[0m \e[0;36m$HOME/.gitconfig\e[0m if present)"
 read -rp $'    Enter GitHub username (leave blank to skip \e[0;36m.gitconfig\e[0m): ' USERNAME
 if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
+  # --- Start parsing values for .gitconfig --- #
 
   # Fetch github user data
   if [[ ! -e "$tempDir/gh_api_res.json" ]]; then
@@ -218,8 +219,10 @@ if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
     exit 1
   fi
 
+  # Verified, now parse required data
   USER_ID=$(parseJsonNum id "$tempDir/gh_api_res.json")
 
+  # Prompt and handle Git-LFS option
   DO_GIT_LFS=1
   if yn_prompt "    Enable Git-LFS in \e[0;36m$HOME/.gitconfig\e[0m? (still need to install on your system)" 0; then
     if [[ $DEBUG == 1 ]]; then
@@ -229,6 +232,7 @@ if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
     DO_GIT_LFS=0
   fi
 
+  # Set auto-crlf based on $OSTYPE
   AUTO_CRLF=''
   case "$OSTYPE" in
     "linux-gnu") AUTO_CRLF='input';;
@@ -236,6 +240,7 @@ if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
   esac
   echo -e "    Setting \e[0;36mcore.autocrlf\e[0m to \e[0;36m$AUTO_CRLF\e[0m since this is a \e[0;36m$OS_TYPE_DESCRIPTOR\e[0m system. "
 
+  # Prompt and handle git text editor (used for commit messages and such)
   read -rp $'    Enter Git text editor executable (default: \e[0;36mvim\e[0m): ' GIT_EDITOR
   if [[ "$GIT_EDITOR" == "" ]]; then
     if [[ $DEBUG == 1 ]]; then
@@ -243,6 +248,8 @@ if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
     fi
     GIT_EDITOR="vim"
   fi
+
+  # --- End parsing values for .gitconfig --- #
 
   # Generate .gitconfig in temp directory and parse in values
   echo -e "    Generating \e[0;36m$HOME/.gitconfig\e[0m based on \e[0;36m$projectDir/template.gitconfig\e[0m"
