@@ -164,7 +164,7 @@ projectDir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 tempDir="$projectDir/.temp"
 if [[ -e "$tempDir" ]]; then
   if [[ $DEBUG == 0 ]]; then
-    echo -e "Delete or rename \e[0;36$tempDir\e[0m]. As this program needs to create a temporary directory there."
+    echo -e "Delete or rename \e[0;36m$tempDir\e[0m. As this program needs to create a temporary directory there."
     exit 1
   fi
 else
