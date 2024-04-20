@@ -137,16 +137,13 @@ fi
 OS_TYPE_DESCRIPTOR=''
 case "$OSTYPE" in
   "linux-gnu")
-    OS_TYPE_DESCRIPTOR="GNU Linux"
-    ;;
+    OS_TYPE_DESCRIPTOR="GNU Linux";;
   "msys")
-    OS_TYPE_DESCRIPTOR="Git Bash for Windows (MinGW)"
-    ;;
+    OS_TYPE_DESCRIPTOR="Git Bash for Windows (MinGW)";;
   *)
     # Unknown OS
     echo "Could not match \"$OSTYPE\" to a supported system"
-    exit 1
-    ;;
+    exit 1;;
 esac
 echo -e "Identified this as a \e[0;36m$OS_TYPE_DESCRIPTOR\e[0m system."
 
@@ -175,11 +172,11 @@ else
 fi
 
 echo "Creating file symlinks"
-create_file_symlink "$projectDir/.bash_aliases"         "$HOME/.bash_aliases"
-create_file_symlink "$projectDir/.bash_profile"         "$HOME/.bash_profile"
-create_file_symlink "$projectDir/.bash_program_setups"  "$HOME/.bash_program_setups"
-create_file_symlink "$projectDir/.bashrc"               "$HOME/.bashrc"
-create_file_symlink "$projectDir/.vimrc"                "$HOME/.vimrc"
+create_file_symlink "$projectDir/.bash_aliases"        "$HOME/.bash_aliases"
+create_file_symlink "$projectDir/.bash_profile"        "$HOME/.bash_profile"
+create_file_symlink "$projectDir/.bash_program_setups" "$HOME/.bash_program_setups"
+create_file_symlink "$projectDir/.bashrc"              "$HOME/.bashrc"
+create_file_symlink "$projectDir/.vimrc"               "$HOME/.vimrc"
 
 echo "Generating other files"
 
@@ -254,9 +251,9 @@ if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
     GIT_LFS_STR=$'[filter "lfs"]\n  smudge = git-lfs smudge -- %f\n  process = git-lfs filter-process\n  required = true\n  clean = git-lfs clean -- %f'
     echo "$GIT_LFS_STR" >> "$tempDir/.gitconfig"
   fi
-  sed -i "s/##USERNAME##/$USERNAME/g" "$tempDir/.gitconfig"
-  sed -i "s/##USER_ID##/$USER_ID/g" "$tempDir/.gitconfig"
-  sed -i "s/##AUTO_CRLF##/$AUTO_CRLF/g" "$tempDir/.gitconfig"
+  sed -i "s/##USERNAME##/$USERNAME/g"     "$tempDir/.gitconfig"
+  sed -i "s/##USER_ID##/$USER_ID/g"       "$tempDir/.gitconfig"
+  sed -i "s/##AUTO_CRLF##/$AUTO_CRLF/g"   "$tempDir/.gitconfig"
   sed -i "s/##GIT_EDITOR##/$GIT_EDITOR/g" "$tempDir/.gitconfig"
 
   if [[ $DEBUG == 1 ]]; then
