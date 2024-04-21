@@ -230,22 +230,24 @@ function main() {
     # --- Start parsing values for .gitconfig --- #
 
     # Fetch github user data
-    if [[ ! -e "$TEMP_DIR/gh_api_res.json" ]]; then
+    local -r GH_RES_JSON="$TEMP_DIR/gh_api_res.json"
+    if [[ ! -e "$GH_RES_JSON" ]]; then
       if [[ $DEBUG == 1 && "$USERNAME" == "" ]]; then
         echo "[DEBUG] Must enter GitHub username at least one time to test further"; exit 1
       fi
 
-      echo -e "    Sending request to \e[0;36mhttps://api.github.com/users/$USERNAME\e[0m"
+      local -r GH_REQUEST_URL="https://api.github.com/users/$USERNAME"
+      echo -e "    Sending request to \e[0;36m$GH_REQUEST_URL\e[0m"
       if command -v curl &> /dev/null; then
         if [[ $DEBUG == 1 ]]; then
           echo "    [DEBUG] Using 'curl'"
         fi
-        curl -so "$TEMP_DIR/gh_api_res.json" "https://api.github.com/users/$USERNAME"
+        curl -so "$GH_RES_JSON" "$GH_REQUEST_URL"
       elif command -v wget &> /dev/null; then
         if [[ $DEBUG == 1 ]]; then
           echo "    [DEBUG] Using 'wget'"
         fi
-        wget -qO "$TEMP_DIR/gh_api_res.json" "https://api.github.com/users/$USERNAME"
+        wget -qO "$GH_RES_JSON" "$GH_REQUEST_URL"
       else
         echo "Could not execute either 'curl' or 'wget' to fetch GitHub data. Please install one of the two."
         exit 1
@@ -255,9 +257,9 @@ function main() {
     # Verify username matches github user data
     local VERIFY_USERNAME
     if [[ $USE_JQ == 0 ]]; then
-      VERIFY_USERNAME=$(jq -r '.login' "$TEMP_DIR/gh_api_res.json")
+      VERIFY_USERNAME=$(jq -r '.login' "$GH_RES_JSON")
     else
-      VERIFY_USERNAME=$(util::parse_json_str login "$TEMP_DIR/gh_api_res.json")
+      VERIFY_USERNAME=$(util::parse_json_str login "$GH_RES_JSON")
     fi
     readonly VERIFY_USERNAME
     if [[ $DEBUG == 1 && "$USERNAME" == "" ]]; then
@@ -273,9 +275,9 @@ function main() {
     # Verified, now parse required data
     local USER_ID
     if [[ $USE_JQ == 0 ]]; then
-      USER_ID=$(jq '.id' "$TEMP_DIR/gh_api_res.json")
+      USER_ID=$(jq '.id' "$GH_RES_JSON")
     else
-      USER_ID=$(util::parse_json_num id "$TEMP_DIR/gh_api_res.json")
+      USER_ID=$(util::parse_json_num id "$GH_RES_JSON")
     fi
     readonly USER_ID
 
@@ -314,20 +316,21 @@ function main() {
 
     # Generate .gitconfig in temp directory and parse in values
     echo -e "    Generating \e[0;36m$HOME/.gitconfig\e[0m based on \e[0;36m$PROJECT_DIR/template.gitconfig\e[0m"
-    cp "$PROJECT_DIR/template.gitconfig" "$TEMP_DIR/.gitconfig"
+    local -r TEMP_GIT_CONFIG="$TEMP_DIR/.gitconfig"
+    cp "$PROJECT_DIR/template.gitconfig" "$TEMP_GIT_CONFIG"
     if [[ $DO_GIT_LFS == 0 ]]; then
       local -r GIT_LFS_STR=$'[filter "lfs"]\n  smudge = git-lfs smudge -- %f\n  process = git-lfs filter-process\n  required = true\n  clean = git-lfs clean -- %f'
-      echo "$GIT_LFS_STR" >> "$TEMP_DIR/.gitconfig"
+      echo "$GIT_LFS_STR" >> "$TEMP_GIT_CONFIG"
     fi
-    sed -i "s/##USERNAME##/$USERNAME/g"     "$TEMP_DIR/.gitconfig"
-    sed -i "s/##USER_ID##/$USER_ID/g"       "$TEMP_DIR/.gitconfig"
-    sed -i "s/##AUTO_CRLF##/$AUTO_CRLF/g"   "$TEMP_DIR/.gitconfig"
-    sed -i "s/##GIT_EDITOR##/$GIT_EDITOR/g" "$TEMP_DIR/.gitconfig"
+    sed -i "s/##USERNAME##/$USERNAME/g"     "$TEMP_GIT_CONFIG"
+    sed -i "s/##USER_ID##/$USER_ID/g"       "$TEMP_GIT_CONFIG"
+    sed -i "s/##AUTO_CRLF##/$AUTO_CRLF/g"   "$TEMP_GIT_CONFIG"
+    sed -i "s/##GIT_EDITOR##/$GIT_EDITOR/g" "$TEMP_GIT_CONFIG"
 
     if [[ $DEBUG == 1 ]]; then
       echo -e "    [DEBUG] Skipping copy of \e[0;36m.gitconfig\e[0m to home directory"
     else
-      cp "$TEMP_DIR/.gitconfig" "$HOME/.gitconfig"
+      cp "$TEMP_GIT_CONFIG" "$HOME/.gitconfig"
     fi
   else
     echo -e "    Skipping \e[0;36m.gitconfig\e[0m"
