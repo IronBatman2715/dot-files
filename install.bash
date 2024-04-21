@@ -13,7 +13,7 @@
 # Returns:
 #   0 for yes, 1 for no
 ########################################
-function yn_prompt() {
+function util::yn_prompt() {
   local yn_brackets="["  
   case $2 in
     0)  yn_brackets+="Y/n";;
@@ -54,7 +54,7 @@ function yn_prompt() {
 #   If symlink path already points to source path, do nothing.
 # Returns:
 ########################################
-function create_file_symlink() {
+function util::create_file_symlink() {
   local -r SRC_PATH="$1"
   local -r SYMLINK_PATH="$2"
 
@@ -85,7 +85,7 @@ function create_file_symlink() {
   fi
   readonly prompt
 
-  if yn_prompt "$prompt" 0; then
+  if util::yn_prompt "$prompt" 0; then
     echo -e "    Overwriting \e[0;36m$SYMLINK_PATH\e[0m"
     rm -rf "$SYMLINK_PATH"
 
@@ -106,7 +106,7 @@ function create_file_symlink() {
 # Returns:
 #   Parsed number
 ########################################
-function parse_json_num() {
+function util::parse_json_num() {
   local -r VALUE_PATTERN="[0-9]+"
   local -r LINE_PATTERN="\"$1\":\s*${VALUE_PATTERN}\s*,?"
 
@@ -133,7 +133,7 @@ function parse_json_num() {
 # Returns:
 #   Parsed string
 ########################################
-function parse_json_str() {
+function util::parse_json_str() {
   local -r VALUE_PATTERN="[A-Za-z0-9_-]+"
   local -r LINE_PATTERN="\"$1\":\s*\"${VALUE_PATTERN}\"\s*,?"
 
@@ -174,7 +174,7 @@ function main() {
   echo -e "Identified this as a \e[0;36m$OSTYPE_DESCRIPTOR\e[0m system."
 
   if [[ "$OSTYPE" == "msys" ]]; then
-    if ! yn_prompt "Confirm that you have read \e[0;36mREADME\e[0m installation notes for $OSTYPE_DESCRIPTOR?"; then
+    if ! util::yn_prompt "Confirm that you have read \e[0;36mREADME\e[0m installation notes for $OSTYPE_DESCRIPTOR?"; then
       echo -e "  \e[0;31mExiting\e[0m due to unconfirmed setup"
       exit 1
     fi
@@ -198,11 +198,11 @@ function main() {
   fi
 
   echo "Creating file symlinks"
-  create_file_symlink "$PROJECT_DIR/.bash_aliases"        "$HOME/.bash_aliases"
-  create_file_symlink "$PROJECT_DIR/.bash_profile"        "$HOME/.bash_profile"
-  create_file_symlink "$PROJECT_DIR/.bash_program_setups" "$HOME/.bash_program_setups"
-  create_file_symlink "$PROJECT_DIR/.bashrc"              "$HOME/.bashrc"
-  create_file_symlink "$PROJECT_DIR/.vimrc"               "$HOME/.vimrc"
+  util::create_file_symlink "$PROJECT_DIR/.bash_aliases"        "$HOME/.bash_aliases"
+  util::create_file_symlink "$PROJECT_DIR/.bash_profile"        "$HOME/.bash_profile"
+  util::create_file_symlink "$PROJECT_DIR/.bash_program_setups" "$HOME/.bash_program_setups"
+  util::create_file_symlink "$PROJECT_DIR/.bashrc"              "$HOME/.bashrc"
+  util::create_file_symlink "$PROJECT_DIR/.vimrc"               "$HOME/.vimrc"
 
   echo "Generating other files"
 
@@ -236,7 +236,7 @@ function main() {
     fi
 
     # Verify username matches github user data
-    local -r VERIFY_USERNAME=$(parse_json_str login "$TEMP_DIR/gh_api_res.json")
+    local -r VERIFY_USERNAME=$(util::parse_json_str login "$TEMP_DIR/gh_api_res.json")
     if [[ $DEBUG == 1 && "$USERNAME" == "" ]]; then
       echo "    [DEBUG] Setting \$USERNAME to cached value"
       USERNAME="$VERIFY_USERNAME"
@@ -248,11 +248,11 @@ function main() {
     fi
 
     # Verified, now parse required data
-    local -r USER_ID=$(parse_json_num id "$TEMP_DIR/gh_api_res.json")
+    local -r USER_ID=$(util::parse_json_num id "$TEMP_DIR/gh_api_res.json")
 
     # Prompt and handle Git-LFS option
     local DO_GIT_LFS=1
-    if yn_prompt "    Enable Git-LFS in \e[0;36m$HOME/.gitconfig\e[0m? (still need to install on your system)" 0; then
+    if util::yn_prompt "    Enable Git-LFS in \e[0;36m$HOME/.gitconfig\e[0m? (still need to install on your system)" 0; then
       if [[ $DEBUG == 1 ]]; then
         echo "    [DEBUG] Enabling Git-LFS"
       fi
