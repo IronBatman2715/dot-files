@@ -18,7 +18,7 @@ function yn_prompt() {
       exit 1;;
   esac
   yn_brackets+="]: "
-
+  readonly yn_brackets
 
   read -rp "$(echo -e "$1 $yn_brackets")" INPUT
 
@@ -35,64 +35,65 @@ function yn_prompt() {
 }
 
 function create_file_symlink() {
-  # $1 = source file path
-  # $2 = symlink file path
+  # $1: source file path
+  # $2: symlink file path
+  #
+  # $?: nothing
 
-  local src_path="$1"
-  local symlink_path="$2"
+  local -r SRC_PATH="$1"
+  local -r SYMLINK_PATH="$2"
 
-  if [[ ! -f "$src_path" ]]; then
-    echo -e "  Creating empty \e[0;36m$src_path\e[0m"
-    touch "$src_path"
+  if [[ ! -f "$SRC_PATH" ]]; then
+    echo -e "  Creating empty \e[0;36m$SRC_PATH\e[0m"
+    touch "$SRC_PATH"
   fi
 
-  # If nothing exists at $symlink_path, simply create symlink and return
-  if [[ ! -e "$symlink_path" ]]; then
-    echo -e "  Creating symlink at \e[0;36m$symlink_path\e[0m pointing to \e[0;36m$src_path\e[0m"
-    ln -s "$src_path" "$symlink_path"
+  # If nothing exists at $SYMLINK_PATH, simply create symlink and return
+  if [[ ! -e "$SYMLINK_PATH" ]]; then
+    echo -e "  Creating symlink at \e[0;36m$SYMLINK_PATH\e[0m pointing to \e[0;36m$SRC_PATH\e[0m"
+    ln -s "$SRC_PATH" "$SYMLINK_PATH"
     return
   fi
 
-  local prompt="  Something already exists at \e[0;36m$symlink_path\e[0m. Overwrite?"
-  if [[ -L "$symlink_path" ]]; then
-    local symlink_real_path="$(realpath "$symlink_path")"
-    if [[ "$symlink_real_path" == "$src_path" ]]; then
-      echo -e "  \e[0;36m$symlink_path\e[0m is already a symlink to \e[0;36m$src_path\e[0m. Skipping"
+  local prompt="  Something already exists at \e[0;36m$SYMLINK_PATH\e[0m. Overwrite?"
+  if [[ -L "$SYMLINK_PATH" ]]; then
+    local symlink_real_path
+    symlink_real_path="$(realpath "$SYMLINK_PATH")"
+
+    if [[ "$symlink_real_path" == "$SRC_PATH" ]]; then
+      echo -e "  \e[0;36m$SYMLINK_PATH\e[0m is already a symlink to \e[0;36m$SRC_PATH\e[0m. Skipping"
       return
     fi
 
     # Update prompt with new information
-    prompt="  \e[0;36m$symlink_path\e[0m is already a symlink BUT it points to a different location (\e[0;36m$symlink_real_path\e[0m). Overwrite?"
+    prompt="  \e[0;36m$SYMLINK_PATH\e[0m is already a symlink BUT it points to a different location (\e[0;36m$symlink_real_path\e[0m). Overwrite?"
   fi
+  readonly prompt
 
   if yn_prompt "$prompt" 0; then
-    echo -e "    Overwriting \e[0;36m$symlink_path\e[0m"
-    rm -rf "$symlink_path"
+    echo -e "    Overwriting \e[0;36m$SYMLINK_PATH\e[0m"
+    rm -rf "$SYMLINK_PATH"
 
-    echo -e "    Creating symlink at \e[0;36m$symlink_path\e[0m pointing to \e[0;36m$src_path\e[0m"
-    ln -s "$src_path" "$symlink_path"
+    echo -e "    Creating symlink at \e[0;36m$SYMLINK_PATH\e[0m pointing to \e[0;36m$SRC_PATH\e[0m"
+    ln -s "$SRC_PATH" "$SYMLINK_PATH"
   else
     echo -e "    Skipped install of \e[0;36m$1\e[0m"
   fi
 }
 
-function parseJsonNum() {
-  # $1 = JSON key to parse
-  # $2 OR /dev/stdin = JSON as text OR JSON file location (respectively)
+function parse_json_num() {
+  # $1: JSON key to parse
+  # $2 OR /dev/stdin: JSON as text OR JSON file location (respectively)
+  #
+  # $?: parsed number
 
-  local VALUE_PATTERN="[0-9]+"
-  local LINE_PATTERN="\"$1\":\s*${VALUE_PATTERN}\s*,?"
+  local -r VALUE_PATTERN="[0-9]+"
+  local -r LINE_PATTERN="\"$1\":\s*${VALUE_PATTERN}\s*,?"
 
   case $# in
-    1)
-      PARSED_NUMBER=$(cat /dev/stdin | grep -oE "$LINE_PATTERN" | grep -oE "$VALUE_PATTERN")
-    ;;
-    2)
-      PARSED_NUMBER=$(grep -oE "$LINE_PATTERN" "$2" | grep -oE "$VALUE_PATTERN")
-    ;;
-    *)
-      echo "Must enter a key to parse and then either pipe in the JSON or enter the JSON file name!"; exit 1
-    ;;
+    1) PARSED_NUMBER=$(cat /dev/stdin | grep -oE "$LINE_PATTERN" | grep -oE "$VALUE_PATTERN");;
+    2) PARSED_NUMBER=$(grep -oE "$LINE_PATTERN" "$2" | grep -oE "$VALUE_PATTERN");;
+    *) echo "Must enter a key to parse and then either pipe in the JSON or enter the JSON file name!"; exit 1;;
   esac
 
   if [[ "$PARSED_NUMBER" =~ ^$VALUE_PATTERN$ ]]; then
@@ -102,23 +103,19 @@ function parseJsonNum() {
   fi
 }
 
-function parseJsonStr() {
-  # $1 = JSON key to parse
-  # $2 OR /dev/stdin = JSON as text OR JSON file location (respectively)
+function parse_json_str() {
+  # $1: JSON key to parse
+  # $2 OR /dev/stdin: JSON as text OR JSON file location (respectively)
+  #
+  # $?: parsed string
 
-  local VALUE_PATTERN="[A-Za-z0-9_-]+"
-  local LINE_PATTERN="\"$1\":\s*\"${VALUE_PATTERN}\"\s*,?"
+  local -r VALUE_PATTERN="[A-Za-z0-9_-]+"
+  local -r LINE_PATTERN="\"$1\":\s*\"${VALUE_PATTERN}\"\s*,?"
 
   case $# in
-    1)
-      PARSED_STRING=$(cat /dev/stdin | grep -oE "$LINE_PATTERN" | grep -oE "$VALUE_PATTERN" | tail -1)
-    ;;
-    2)
-      PARSED_STRING=$(grep -oE "$LINE_PATTERN" "$2" | grep -oE "$VALUE_PATTERN" | tail -1)
-    ;;
-    *)
-      echo "Must enter a key to parse and then either pipe in the JSON or enter the JSON file name!"; exit 1
-    ;;
+    1) PARSED_STRING=$(cat /dev/stdin | grep -oE "$LINE_PATTERN" | grep -oE "$VALUE_PATTERN" | tail -1);;
+    2) PARSED_STRING=$(grep -oE "$LINE_PATTERN" "$2" | grep -oE "$VALUE_PATTERN" | tail -1);;
+    *) echo "Must enter a key to parse and then either pipe in the JSON or enter the JSON file name!"; exit 1;;
   esac
 
   if [[ "$PARSED_STRING" =~ ^$VALUE_PATTERN$ ]]; then
@@ -139,21 +136,21 @@ if [[ $DEBUG == 1 ]]; then
   echo "[DEBUG] Debug mode active!"
 fi
 
-OS_TYPE_DESCRIPTOR=''
+OSTYPE_DESCRIPTOR=''
 case "$OSTYPE" in
   "linux-gnu")
-    OS_TYPE_DESCRIPTOR="GNU Linux";;
+    OSTYPE_DESCRIPTOR="GNU Linux";;
   "msys")
-    OS_TYPE_DESCRIPTOR="Git Bash for Windows (MinGW)";;
+    OSTYPE_DESCRIPTOR="Git Bash for Windows (MinGW)";;
   *)
     # Unknown OS
     echo "Could not match \"$OSTYPE\" to a supported system"
     exit 1;;
 esac
-echo -e "Identified this as a \e[0;36m$OS_TYPE_DESCRIPTOR\e[0m system."
+echo -e "Identified this as a \e[0;36m$OSTYPE_DESCRIPTOR\e[0m system."
 
 if [[ "$OSTYPE" == "msys" ]]; then
-  if ! yn_prompt "Confirm that you have read \e[0;36mREADME\e[0m installation notes for $OS_TYPE_DESCRIPTOR?"; then
+  if ! yn_prompt "Confirm that you have read \e[0;36mREADME\e[0m installation notes for $OSTYPE_DESCRIPTOR?"; then
     echo -e "  \e[0;31mExiting\e[0m due to unconfirmed setup"
     exit 1
   fi
@@ -165,23 +162,23 @@ if [[ "$OSTYPE" == "msys" ]]; then
 fi
 echo
 
-projectDir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-tempDir="$projectDir/.temp"
-if [[ -e "$tempDir" ]]; then
+PROJECT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+TEMP_DIR="$PROJECT_DIR/.temp"
+if [[ -e "$TEMP_DIR" ]]; then
   if [[ $DEBUG == 0 ]]; then
-    echo -e "Delete or rename \e[0;36m$tempDir\e[0m. As this program needs to create a temporary directory there."
+    echo -e "Delete or rename \e[0;36m$TEMP_DIR\e[0m. As this program needs to create a temporary directory there."
     exit 1
   fi
 else
-  mkdir "$tempDir"
+  mkdir "$TEMP_DIR"
 fi
 
 echo "Creating file symlinks"
-create_file_symlink "$projectDir/.bash_aliases"        "$HOME/.bash_aliases"
-create_file_symlink "$projectDir/.bash_profile"        "$HOME/.bash_profile"
-create_file_symlink "$projectDir/.bash_program_setups" "$HOME/.bash_program_setups"
-create_file_symlink "$projectDir/.bashrc"              "$HOME/.bashrc"
-create_file_symlink "$projectDir/.vimrc"               "$HOME/.vimrc"
+create_file_symlink "$PROJECT_DIR/.bash_aliases"        "$HOME/.bash_aliases"
+create_file_symlink "$PROJECT_DIR/.bash_profile"        "$HOME/.bash_profile"
+create_file_symlink "$PROJECT_DIR/.bash_program_setups" "$HOME/.bash_program_setups"
+create_file_symlink "$PROJECT_DIR/.bashrc"              "$HOME/.bashrc"
+create_file_symlink "$PROJECT_DIR/.vimrc"               "$HOME/.vimrc"
 
 echo "Generating other files"
 
@@ -191,7 +188,7 @@ if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
   # --- Start parsing values for .gitconfig --- #
 
   # Fetch github user data
-  if [[ ! -e "$tempDir/gh_api_res.json" ]]; then
+  if [[ ! -e "$TEMP_DIR/gh_api_res.json" ]]; then
     if [[ $DEBUG == 1 && "$USERNAME" == "" ]]; then
       echo "[DEBUG] Must enter GitHub username at least one time to test further"; exit 1
     fi
@@ -201,12 +198,12 @@ if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
       if [[ $DEBUG == 1 ]]; then
         echo "    [DEBUG] Using 'curl'"
       fi
-      curl -so "$tempDir/gh_api_res.json" "https://api.github.com/users/$USERNAME"
+      curl -so "$TEMP_DIR/gh_api_res.json" "https://api.github.com/users/$USERNAME"
     elif command -v wget &> /dev/null; then
       if [[ $DEBUG == 1 ]]; then
         echo "    [DEBUG] Using 'wget'"
       fi
-      wget -qO "$tempDir/gh_api_res.json" "https://api.github.com/users/$USERNAME"
+      wget -qO "$TEMP_DIR/gh_api_res.json" "https://api.github.com/users/$USERNAME"
     else
       echo "Could not execute either 'curl' or 'wget' to fetch GitHub data. Please install one of the two."
       exit 1
@@ -214,7 +211,7 @@ if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
   fi
 
   # Verify username matches github user data
-  VERIFY_USERNAME=$(parseJsonStr login "$tempDir/gh_api_res.json")
+  VERIFY_USERNAME=$(parse_json_str login "$TEMP_DIR/gh_api_res.json")
   if [[ $DEBUG == 1 && "$USERNAME" == "" ]]; then
     echo "    [DEBUG] Setting \$USERNAME to cached value"
     USERNAME="$VERIFY_USERNAME"
@@ -225,7 +222,7 @@ if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
   fi
 
   # Verified, now parse required data
-  USER_ID=$(parseJsonNum id "$tempDir/gh_api_res.json")
+  USER_ID=$(parse_json_num id "$TEMP_DIR/gh_api_res.json")
 
   # Prompt and handle Git-LFS option
   DO_GIT_LFS=1
@@ -243,7 +240,7 @@ if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
     "linux-gnu") AUTO_CRLF='input';;
     "msys")      AUTO_CRLF='true';;
   esac
-  echo -e "    Setting \e[0;36mcore.autocrlf\e[0m to \e[0;36m$AUTO_CRLF\e[0m since this is a \e[0;36m$OS_TYPE_DESCRIPTOR\e[0m system. "
+  echo -e "    Setting \e[0;36mcore.autocrlf\e[0m to \e[0;36m$AUTO_CRLF\e[0m since this is a \e[0;36m$OSTYPE_DESCRIPTOR\e[0m system. "
 
   # Prompt and handle git text editor (used for commit messages and such)
   read -rp $'    Enter Git text editor executable (default: \e[0;36mvim\e[0m): ' GIT_EDITOR
@@ -257,21 +254,21 @@ if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
   # --- End parsing values for .gitconfig --- #
 
   # Generate .gitconfig in temp directory and parse in values
-  echo -e "    Generating \e[0;36m$HOME/.gitconfig\e[0m based on \e[0;36m$projectDir/template.gitconfig\e[0m"
-  cp "$projectDir/template.gitconfig" "$tempDir/.gitconfig"
+  echo -e "    Generating \e[0;36m$HOME/.gitconfig\e[0m based on \e[0;36m$PROJECT_DIR/template.gitconfig\e[0m"
+  cp "$PROJECT_DIR/template.gitconfig" "$TEMP_DIR/.gitconfig"
   if [[ $DO_GIT_LFS == 0 ]]; then
     GIT_LFS_STR=$'[filter "lfs"]\n  smudge = git-lfs smudge -- %f\n  process = git-lfs filter-process\n  required = true\n  clean = git-lfs clean -- %f'
-    echo "$GIT_LFS_STR" >> "$tempDir/.gitconfig"
+    echo "$GIT_LFS_STR" >> "$TEMP_DIR/.gitconfig"
   fi
-  sed -i "s/##USERNAME##/$USERNAME/g"     "$tempDir/.gitconfig"
-  sed -i "s/##USER_ID##/$USER_ID/g"       "$tempDir/.gitconfig"
-  sed -i "s/##AUTO_CRLF##/$AUTO_CRLF/g"   "$tempDir/.gitconfig"
-  sed -i "s/##GIT_EDITOR##/$GIT_EDITOR/g" "$tempDir/.gitconfig"
+  sed -i "s/##USERNAME##/$USERNAME/g"     "$TEMP_DIR/.gitconfig"
+  sed -i "s/##USER_ID##/$USER_ID/g"       "$TEMP_DIR/.gitconfig"
+  sed -i "s/##AUTO_CRLF##/$AUTO_CRLF/g"   "$TEMP_DIR/.gitconfig"
+  sed -i "s/##GIT_EDITOR##/$GIT_EDITOR/g" "$TEMP_DIR/.gitconfig"
 
   if [[ $DEBUG == 1 ]]; then
     echo -e "    [DEBUG] Skipping copy of \e[0;36m.gitconfig\e[0m to home directory"
   else
-    cp "$tempDir/.gitconfig" "$HOME/.gitconfig"
+    cp "$TEMP_DIR/.gitconfig" "$HOME/.gitconfig"
   fi
 else
   echo -e "    Skipping \e[0;36m.gitconfig\e[0m"
@@ -283,7 +280,7 @@ if [[ $DEBUG == 1 ]]; then
   echo "[DEBUG] Skipping cleaning up temporary files"
 else
   echo "Cleaning up temporary files"
-  rm -r "$tempDir"
+  rm -r "$TEMP_DIR"
 fi
 
 echo "Install complete!"
