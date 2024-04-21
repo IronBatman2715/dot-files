@@ -150,162 +150,170 @@ function parse_json_str() {
   fi
 }
 
-### MAIN ###
-
-# Set DEBUG=1 to run in debug mode (i.e. "DEBUG=1 ./install.bash")
-
-if [[ $DEBUG != 1 ]]; then
-  DEBUG=0 # Normal operation
-fi
-if [[ $DEBUG == 1 ]]; then
-  echo "[DEBUG] Debug mode active!"
-fi
-
-OSTYPE_DESCRIPTOR=''
-case "$OSTYPE" in
-  "linux-gnu")
-    OSTYPE_DESCRIPTOR="GNU Linux";;
-  "msys")
-    OSTYPE_DESCRIPTOR="Git Bash for Windows (MinGW)";;
-  *)
-    # Unknown OS
-    echo "Could not match \"$OSTYPE\" to a supported system"
-    exit 1;;
-esac
-echo -e "Identified this as a \e[0;36m$OSTYPE_DESCRIPTOR\e[0m system."
-
-if [[ "$OSTYPE" == "msys" ]]; then
-  if ! yn_prompt "Confirm that you have read \e[0;36mREADME\e[0m installation notes for $OSTYPE_DESCRIPTOR?"; then
-    echo -e "  \e[0;31mExiting\e[0m due to unconfirmed setup"
-    exit 1
+function main() {
+  # Set DEBUG=1 to run in debug mode (i.e. "DEBUG=1 ./install.bash")
+  if [[ $DEBUG != 1 ]]; then
+    DEBUG=0 # Normal operation
   fi
-
   if [[ $DEBUG == 1 ]]; then
-    echo "[DEBUG] Setting MSYS environment variable so symlinks work as expected."
+    echo "[DEBUG] Debug mode active!"
   fi
-  export MSYS=winsymlinks:nativestrict
-fi
-echo
 
-PROJECT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-TEMP_DIR="$PROJECT_DIR/.temp"
-if [[ -e "$TEMP_DIR" ]]; then
-  if [[ $DEBUG == 0 ]]; then
-    echo -e "Delete or rename \e[0;36m$TEMP_DIR\e[0m. As this program needs to create a temporary directory there."
-    exit 1
-  fi
-else
-  mkdir "$TEMP_DIR"
-fi
+  local OSTYPE_DESCRIPTOR=''
+  case "$OSTYPE" in
+    "linux-gnu")
+      OSTYPE_DESCRIPTOR="GNU Linux";;
+    "msys")
+      OSTYPE_DESCRIPTOR="Git Bash for Windows (MinGW)";;
+    *)
+      # Unknown OS
+      echo "Could not match \"$OSTYPE\" to a supported system"
+      exit 1;;
+  esac
+  readonly OSTYPE_DESCRIPTOR
+  echo -e "Identified this as a \e[0;36m$OSTYPE_DESCRIPTOR\e[0m system."
 
-echo "Creating file symlinks"
-create_file_symlink "$PROJECT_DIR/.bash_aliases"        "$HOME/.bash_aliases"
-create_file_symlink "$PROJECT_DIR/.bash_profile"        "$HOME/.bash_profile"
-create_file_symlink "$PROJECT_DIR/.bash_program_setups" "$HOME/.bash_program_setups"
-create_file_symlink "$PROJECT_DIR/.bashrc"              "$HOME/.bashrc"
-create_file_symlink "$PROJECT_DIR/.vimrc"               "$HOME/.vimrc"
-
-echo "Generating other files"
-
-echo -e "  Generating .gitconfig (this will \e[0;33moverwrite\e[0m \e[0;36m$HOME/.gitconfig\e[0m if present)"
-read -rp $'    Enter GitHub username (leave blank to skip \e[0;36m.gitconfig\e[0m): ' USERNAME
-if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
-  # --- Start parsing values for .gitconfig --- #
-
-  # Fetch github user data
-  if [[ ! -e "$TEMP_DIR/gh_api_res.json" ]]; then
-    if [[ $DEBUG == 1 && "$USERNAME" == "" ]]; then
-      echo "[DEBUG] Must enter GitHub username at least one time to test further"; exit 1
-    fi
-
-    echo -e "    Sending request to \e[0;36mhttps://api.github.com/users/$USERNAME\e[0m"
-    if command -v curl &> /dev/null; then
-      if [[ $DEBUG == 1 ]]; then
-        echo "    [DEBUG] Using 'curl'"
-      fi
-      curl -so "$TEMP_DIR/gh_api_res.json" "https://api.github.com/users/$USERNAME"
-    elif command -v wget &> /dev/null; then
-      if [[ $DEBUG == 1 ]]; then
-        echo "    [DEBUG] Using 'wget'"
-      fi
-      wget -qO "$TEMP_DIR/gh_api_res.json" "https://api.github.com/users/$USERNAME"
-    else
-      echo "Could not execute either 'curl' or 'wget' to fetch GitHub data. Please install one of the two."
+  if [[ "$OSTYPE" == "msys" ]]; then
+    if ! yn_prompt "Confirm that you have read \e[0;36mREADME\e[0m installation notes for $OSTYPE_DESCRIPTOR?"; then
+      echo -e "  \e[0;31mExiting\e[0m due to unconfirmed setup"
       exit 1
     fi
-  fi
 
-  # Verify username matches github user data
-  VERIFY_USERNAME=$(parse_json_str login "$TEMP_DIR/gh_api_res.json")
-  if [[ $DEBUG == 1 && "$USERNAME" == "" ]]; then
-    echo "    [DEBUG] Setting \$USERNAME to cached value"
-    USERNAME="$VERIFY_USERNAME"
-  fi
-  if [[ "$USERNAME" != "$VERIFY_USERNAME" ]]; then
-    echo "Received mismatched username data. (Username requested: $USERNAME) (Username received: $VERIFY_USERNAME)"
-    exit 1
-  fi
-
-  # Verified, now parse required data
-  USER_ID=$(parse_json_num id "$TEMP_DIR/gh_api_res.json")
-
-  # Prompt and handle Git-LFS option
-  DO_GIT_LFS=1
-  if yn_prompt "    Enable Git-LFS in \e[0;36m$HOME/.gitconfig\e[0m? (still need to install on your system)" 0; then
     if [[ $DEBUG == 1 ]]; then
-      echo "    [DEBUG] Enabling Git-LFS"
+      echo "[DEBUG] Setting MSYS environment variable so symlinks work as expected."
     fi
-
-    DO_GIT_LFS=0
+    export MSYS=winsymlinks:nativestrict
   fi
+  echo
 
-  # Set auto-crlf based on $OSTYPE
-  AUTO_CRLF=''
-  case "$OSTYPE" in
-    "linux-gnu") AUTO_CRLF='input';;
-    "msys")      AUTO_CRLF='true';;
-  esac
-  echo -e "    Setting \e[0;36mcore.autocrlf\e[0m to \e[0;36m$AUTO_CRLF\e[0m since this is a \e[0;36m$OSTYPE_DESCRIPTOR\e[0m system. "
-
-  # Prompt and handle git text editor (used for commit messages and such)
-  read -rp $'    Enter Git text editor executable (default: \e[0;36mvim\e[0m): ' GIT_EDITOR
-  if [[ "$GIT_EDITOR" == "" ]]; then
-    if [[ $DEBUG == 1 ]]; then
-      echo "    [DEBUG] Setting \$GIT_EDITOR to default value"
+  local -r PROJECT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+  local -r TEMP_DIR="$PROJECT_DIR/.temp"
+  if [[ -e "$TEMP_DIR" ]]; then
+    if [[ $DEBUG == 0 ]]; then
+      echo -e "Delete or rename \e[0;36m$TEMP_DIR\e[0m. As this program needs to create a temporary directory there."
+      exit 1
     fi
-    GIT_EDITOR="vim"
-  fi
-
-  # --- End parsing values for .gitconfig --- #
-
-  # Generate .gitconfig in temp directory and parse in values
-  echo -e "    Generating \e[0;36m$HOME/.gitconfig\e[0m based on \e[0;36m$PROJECT_DIR/template.gitconfig\e[0m"
-  cp "$PROJECT_DIR/template.gitconfig" "$TEMP_DIR/.gitconfig"
-  if [[ $DO_GIT_LFS == 0 ]]; then
-    GIT_LFS_STR=$'[filter "lfs"]\n  smudge = git-lfs smudge -- %f\n  process = git-lfs filter-process\n  required = true\n  clean = git-lfs clean -- %f'
-    echo "$GIT_LFS_STR" >> "$TEMP_DIR/.gitconfig"
-  fi
-  sed -i "s/##USERNAME##/$USERNAME/g"     "$TEMP_DIR/.gitconfig"
-  sed -i "s/##USER_ID##/$USER_ID/g"       "$TEMP_DIR/.gitconfig"
-  sed -i "s/##AUTO_CRLF##/$AUTO_CRLF/g"   "$TEMP_DIR/.gitconfig"
-  sed -i "s/##GIT_EDITOR##/$GIT_EDITOR/g" "$TEMP_DIR/.gitconfig"
-
-  if [[ $DEBUG == 1 ]]; then
-    echo -e "    [DEBUG] Skipping copy of \e[0;36m.gitconfig\e[0m to home directory"
   else
-    cp "$TEMP_DIR/.gitconfig" "$HOME/.gitconfig"
+    mkdir "$TEMP_DIR"
   fi
-else
-  echo -e "    Skipping \e[0;36m.gitconfig\e[0m"
-fi
+
+  echo "Creating file symlinks"
+  create_file_symlink "$PROJECT_DIR/.bash_aliases"        "$HOME/.bash_aliases"
+  create_file_symlink "$PROJECT_DIR/.bash_profile"        "$HOME/.bash_profile"
+  create_file_symlink "$PROJECT_DIR/.bash_program_setups" "$HOME/.bash_program_setups"
+  create_file_symlink "$PROJECT_DIR/.bashrc"              "$HOME/.bashrc"
+  create_file_symlink "$PROJECT_DIR/.vimrc"               "$HOME/.vimrc"
+
+  echo "Generating other files"
+
+  echo -e "  Generating .gitconfig (this will \e[0;33moverwrite\e[0m \e[0;36m$HOME/.gitconfig\e[0m if present)"
+  local USERNAME
+  read -rp $'    Enter GitHub username (leave blank to skip \e[0;36m.gitconfig\e[0m): ' USERNAME
+  if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
+    # --- Start parsing values for .gitconfig --- #
+
+    # Fetch github user data
+    if [[ ! -e "$TEMP_DIR/gh_api_res.json" ]]; then
+      if [[ $DEBUG == 1 && "$USERNAME" == "" ]]; then
+        echo "[DEBUG] Must enter GitHub username at least one time to test further"; exit 1
+      fi
+
+      echo -e "    Sending request to \e[0;36mhttps://api.github.com/users/$USERNAME\e[0m"
+      if command -v curl &> /dev/null; then
+        if [[ $DEBUG == 1 ]]; then
+          echo "    [DEBUG] Using 'curl'"
+        fi
+        curl -so "$TEMP_DIR/gh_api_res.json" "https://api.github.com/users/$USERNAME"
+      elif command -v wget &> /dev/null; then
+        if [[ $DEBUG == 1 ]]; then
+          echo "    [DEBUG] Using 'wget'"
+        fi
+        wget -qO "$TEMP_DIR/gh_api_res.json" "https://api.github.com/users/$USERNAME"
+      else
+        echo "Could not execute either 'curl' or 'wget' to fetch GitHub data. Please install one of the two."
+        exit 1
+      fi
+    fi
+
+    # Verify username matches github user data
+    local -r VERIFY_USERNAME=$(parse_json_str login "$TEMP_DIR/gh_api_res.json")
+    if [[ $DEBUG == 1 && "$USERNAME" == "" ]]; then
+      echo "    [DEBUG] Setting \$USERNAME to cached value"
+      USERNAME="$VERIFY_USERNAME"
+    fi
+    readonly USERNAME
+    if [[ "$USERNAME" != "$VERIFY_USERNAME" ]]; then
+      echo "Received mismatched username data. (Username requested: $USERNAME) (Username received: $VERIFY_USERNAME)"
+      exit 1
+    fi
+
+    # Verified, now parse required data
+    local -r USER_ID=$(parse_json_num id "$TEMP_DIR/gh_api_res.json")
+
+    # Prompt and handle Git-LFS option
+    local DO_GIT_LFS=1
+    if yn_prompt "    Enable Git-LFS in \e[0;36m$HOME/.gitconfig\e[0m? (still need to install on your system)" 0; then
+      if [[ $DEBUG == 1 ]]; then
+        echo "    [DEBUG] Enabling Git-LFS"
+      fi
+
+      DO_GIT_LFS=0
+    fi
+    readonly DO_GIT_LFS
+
+    # Set auto-crlf based on $OSTYPE
+    local AUTO_CRLF=''
+    case "$OSTYPE" in
+      "linux-gnu") AUTO_CRLF='input';;
+      "msys")      AUTO_CRLF='true';;
+    esac
+    echo -e "    Setting \e[0;36mcore.autocrlf\e[0m to \e[0;36m$AUTO_CRLF\e[0m since this is a \e[0;36m$OSTYPE_DESCRIPTOR\e[0m system. "
+    readonly AUTO_CRLF
+
+    # Prompt and handle git text editor (used for commit messages and such)
+    local GIT_EDITOR
+    read -rp $'    Enter Git text editor executable (default: \e[0;36mvim\e[0m): ' GIT_EDITOR
+    if [[ "$GIT_EDITOR" == "" ]]; then
+      if [[ $DEBUG == 1 ]]; then
+        echo "    [DEBUG] Setting \$GIT_EDITOR to default value"
+      fi
+      GIT_EDITOR="vim"
+    fi
+    readonly GIT_EDITOR
+
+    # --- End parsing values for .gitconfig --- #
+
+    # Generate .gitconfig in temp directory and parse in values
+    echo -e "    Generating \e[0;36m$HOME/.gitconfig\e[0m based on \e[0;36m$PROJECT_DIR/template.gitconfig\e[0m"
+    cp "$PROJECT_DIR/template.gitconfig" "$TEMP_DIR/.gitconfig"
+    if [[ $DO_GIT_LFS == 0 ]]; then
+      local -r GIT_LFS_STR=$'[filter "lfs"]\n  smudge = git-lfs smudge -- %f\n  process = git-lfs filter-process\n  required = true\n  clean = git-lfs clean -- %f'
+      echo "$GIT_LFS_STR" >> "$TEMP_DIR/.gitconfig"
+    fi
+    sed -i "s/##USERNAME##/$USERNAME/g"     "$TEMP_DIR/.gitconfig"
+    sed -i "s/##USER_ID##/$USER_ID/g"       "$TEMP_DIR/.gitconfig"
+    sed -i "s/##AUTO_CRLF##/$AUTO_CRLF/g"   "$TEMP_DIR/.gitconfig"
+    sed -i "s/##GIT_EDITOR##/$GIT_EDITOR/g" "$TEMP_DIR/.gitconfig"
+
+    if [[ $DEBUG == 1 ]]; then
+      echo -e "    [DEBUG] Skipping copy of \e[0;36m.gitconfig\e[0m to home directory"
+    else
+      cp "$TEMP_DIR/.gitconfig" "$HOME/.gitconfig"
+    fi
+  else
+    echo -e "    Skipping \e[0;36m.gitconfig\e[0m"
+  fi
 
 
-echo
-if [[ $DEBUG == 1 ]]; then
-  echo "[DEBUG] Skipping cleaning up temporary files"
-else
-  echo "Cleaning up temporary files"
-  rm -r "$TEMP_DIR"
-fi
+  echo
+  if [[ $DEBUG == 1 ]]; then
+    echo "[DEBUG] Skipping cleaning up temporary files"
+  else
+    echo "Cleaning up temporary files"
+    rm -r "$TEMP_DIR"
+  fi
 
-echo "Install complete!"
+  echo "Install complete!"
+}
+
+main "$@"
