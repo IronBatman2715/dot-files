@@ -210,6 +210,23 @@ function main() {
   local USERNAME
   read -rp $'    Enter GitHub username (leave blank to skip \e[0;36m.gitconfig\e[0m): ' USERNAME
   if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
+    # Verify if 'jq' is available
+    local USE_JQ=0
+    if command -v jq &> /dev/null; then
+      if [[ $DEBUG == 1 ]]; then
+        echo "    [DEBUG] Using 'jq'"
+      fi
+    else      
+      if ! util::yn_prompt "    Could not find 'jq' (https://github.com/jqlang/jq) installed on your system. This is needed for \e[0;33mstable\e[0m JSON parsing.\n\tProceed with rough JSON parsing using grep?"; then
+        exit 1
+      fi
+      USE_JQ=1
+      if [[ $DEBUG == 1 ]]; then
+        echo "    [DEBUG] Using rough JSON parsers"
+      fi
+    fi
+    readonly USE_JQ
+
     # --- Start parsing values for .gitconfig --- #
 
     # Fetch github user data
@@ -236,7 +253,13 @@ function main() {
     fi
 
     # Verify username matches github user data
-    local -r VERIFY_USERNAME=$(util::parse_json_str login "$TEMP_DIR/gh_api_res.json")
+    local VERIFY_USERNAME
+    if [[ $USE_JQ == 0 ]]; then
+      VERIFY_USERNAME=$(jq -r '.login' "$TEMP_DIR/gh_api_res.json")
+    else
+      VERIFY_USERNAME=$(util::parse_json_str login "$TEMP_DIR/gh_api_res.json")
+    fi
+    readonly VERIFY_USERNAME
     if [[ $DEBUG == 1 && "$USERNAME" == "" ]]; then
       echo "    [DEBUG] Setting \$USERNAME to cached value"
       USERNAME="$VERIFY_USERNAME"
@@ -248,7 +271,13 @@ function main() {
     fi
 
     # Verified, now parse required data
-    local -r USER_ID=$(util::parse_json_num id "$TEMP_DIR/gh_api_res.json")
+    local USER_ID
+    if [[ $USE_JQ == 0 ]]; then
+      USER_ID=$(jq '.id' "$TEMP_DIR/gh_api_res.json")
+    else
+      USER_ID=$(util::parse_json_num id "$TEMP_DIR/gh_api_res.json")
+    fi
+    readonly USER_ID
 
     # Prompt and handle Git-LFS option
     local DO_GIT_LFS=1
