@@ -5,22 +5,27 @@
 function yn_prompt() {
   # $1: prompt string
   # $2: default value. 0 for yes, 1 for no. If not set, defaults to no
+  #
+  # $?: 0 for yes, 1 for no
 
-  local yn_brackets="["
-  if [[ $2 == 0 ]]; then
-    yn_brackets+="Y/n"
-  else
-    yn_brackets+="y/N"
-  fi
+  local yn_brackets="["  
+  case $2 in
+    0)  yn_brackets+="Y/n";;
+    1)  ;&
+    "") yn_brackets+="y/N";;
+    *)
+      echo "Could not match \"$2\" to a valid option"
+      exit 1;;
+  esac
   yn_brackets+="]: "
 
 
   read -rp "$(echo -e "$1 $yn_brackets")" INPUT
 
   while :; do
-    if [[ ${INPUT,,} == "y"|| ($INPUT == "" && $2 == 0) ]]; then
+    if [[ ${INPUT,,} == "y" || ($INPUT == "" && $2 == 0) ]]; then
       return 0
-    elif [[ ${INPUT,,} == "n"|| ($INPUT == "" && $2 != 0) ]]; then
+    elif [[ ${INPUT,,} == "n" || ($INPUT == "" && $2 != 0) ]]; then
       return 1
     else
       echo -e "\e[0;31mInvalid entry\e[0m: $INPUT"
