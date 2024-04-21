@@ -1,13 +1,19 @@
 #!/bin/bash
+#
+# Install dot files with user prompts for options and verification of install process.
 
-## HELPER FUNCTIONS ##
-
+########################################
+# Prompt user via stdout/stdin with a yes or no question.
+# Globals:
+# Arguments:
+#   1: prompt string (Ex: "Do you want to continue?").
+#   2: [OPTIONAL] default answer to question. 0 for yes, 1 for no. If not set, defaults to no.
+# Outputs:
+#   Writes prompt to stdout
+# Returns:
+#   0 for yes, 1 for no
+########################################
 function yn_prompt() {
-  # $1: prompt string
-  # $2: default value. 0 for yes, 1 for no. If not set, defaults to no
-  #
-  # $?: 0 for yes, 1 for no
-
   local yn_brackets="["  
   case $2 in
     0)  yn_brackets+="Y/n";;
@@ -34,12 +40,21 @@ function yn_prompt() {
   done
 }
 
+########################################
+# Create a symlink for a file.
+# Globals:
+#   On Git Bash for Windows, REQUIRES "MSYS=winsymlinks:nativestrict".
+# Arguments:
+#   1: source file path.
+#   2: symlink file path.
+# Outputs:
+#   If source path does not point to a file, create empty file there.
+#   If symlink path doesn't point to anything, simply create symlink there.
+#   If symlink path is already occupied, prompt user in stdout whether to overwrite or do nothing.
+#   If symlink path already points to source path, do nothing.
+# Returns:
+########################################
 function create_file_symlink() {
-  # $1: source file path
-  # $2: symlink file path
-  #
-  # $?: nothing
-
   local -r SRC_PATH="$1"
   local -r SYMLINK_PATH="$2"
 
@@ -81,12 +96,17 @@ function create_file_symlink() {
   fi
 }
 
+########################################
+# Parse a JSON for the *number* value at a specifed key.
+# Globals:
+# Arguments:
+#   1: JSON key to parse (Ex: "id").
+#   2 OR stdin: JSON as text OR JSON file location (respectively) 
+# Outputs:
+# Returns:
+#   Parsed number
+########################################
 function parse_json_num() {
-  # $1: JSON key to parse
-  # $2 OR /dev/stdin: JSON as text OR JSON file location (respectively)
-  #
-  # $?: parsed number
-
   local -r VALUE_PATTERN="[0-9]+"
   local -r LINE_PATTERN="\"$1\":\s*${VALUE_PATTERN}\s*,?"
 
@@ -103,12 +123,17 @@ function parse_json_num() {
   fi
 }
 
+########################################
+# Parse a JSON for the *string* value at a specifed key.
+# Globals:
+# Arguments:
+#   1: JSON key to parse (Ex: "id").
+#   2 OR stdin: JSON as text OR JSON file location (respectively) 
+# Outputs:
+# Returns:
+#   Parsed string
+########################################
 function parse_json_str() {
-  # $1: JSON key to parse
-  # $2 OR /dev/stdin: JSON as text OR JSON file location (respectively)
-  #
-  # $?: parsed string
-
   local -r VALUE_PATTERN="[A-Za-z0-9_-]+"
   local -r LINE_PATTERN="\"$1\":\s*\"${VALUE_PATTERN}\"\s*,?"
 
