@@ -2,10 +2,10 @@
 alias ..="cd .."
 
 # ls
-alias lsa="ls -a"
+alias lsa="ls -A"
 alias lsl="ls -l"
-alias lsla="ls -la"
-alias lslah="ls -lah"
+alias lsla="ls -lA"
+alias lslah="ls -lAh"
 
 # git
 alias gs="git status"
