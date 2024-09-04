@@ -71,7 +71,7 @@ function color() {
 
 
 function _build_prompt() {
-  local exit_code="$?"
+  local exit_code="$?" # must save at start so other commands do not overwrite
 
   # Bash prompt Non-printing color escape sequences
   function _np_color() {
