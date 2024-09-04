@@ -51,8 +51,11 @@ set softtabstop=4
 set shiftwidth=4
 set noexpandtab
 
-" Shows tabs and trailing spaces
-"set listchars=tab:>-,trail:_,eol:$
+" Shows tabs and leading/trailing spaces
+" toggle with `:set list` and `:set nolist`
+set list
+set listchars=tab:>-,lead:_,trail:_
+highlight SpecialKey ctermfg=DarkGray
 
 " }}}
 
