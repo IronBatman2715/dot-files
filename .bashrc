@@ -130,8 +130,8 @@ PROMPT_COMMAND=_build_prompt
 function netinfo() {
   local output=''
 
-  output+="$(color '0;36')DATE$(color): $(date)\n"
-  output+="$(color '0;36')USER@HOSTNAME$(color): $(whoami)@$(hostname)\n"
+  output+="$(color '0;36')DATE$(color): $(date)"
+  output+="\n$(color '0;36')USER@HOSTNAME$(color): $(whoami)@$(hostname)"
 
   local local_ip_addr=''
   local router_local_ip_addr=''
@@ -158,11 +158,11 @@ function netinfo() {
       ;;
   esac
 
-  output+="$(color '0;36')LOCAL IP ADDR$(color): $local_ip_addr\n"
-  output+="$(color '0;36')ROUTER LOCAL IP ADDR$(color): $router_local_ip_addr\n"
-  output+="$(color '0;36')PUBLIC IP ADDR$(color): $(curl -s ipinfo.io/ip)\n"
+  output+="\n$(color '0;36')LOCAL IP ADDR$(color): $local_ip_addr"
+  output+="\n$(color '0;36')ROUTER LOCAL IP ADDR$(color): $router_local_ip_addr"
+  output+="\n$(color '0;36')PUBLIC IP ADDR$(color): $(curl -s ipinfo.io/ip)"
 
-  printf "$output"
+  echo -e "$output"
 }
 
 # Run setups for installed programs if present.
