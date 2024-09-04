@@ -91,7 +91,7 @@ function _build_prompt() {
         ;;
     esac
 
-    printf '\[%s\]' "$output"
+    printf '\001%s\002' "$output"
   }
 
   # Set color to indicate status of last command
