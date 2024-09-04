@@ -96,20 +96,23 @@ function _build_prompt() {
 
   # Set color to indicate status of last command
   function _status_code_color() {
+    local color
     case $exit_code in
       0)
         # Last command was successful. Normal and green
-        printf "$(_np_color '0;32')"
+        color='0;32'
         ;;
       1)
         # Last command FAILED. Bold and red
-        printf "$(_np_color '1;31')"
+        color='1;31'
         ;;
       *)
         # Other status code. Normal and yellow
-        printf "$(_np_color '0;33')"
+        color='0;33'
         ;;
     esac
+
+    _np_color "$color"
   }
 
   # Print git branch if current directory is a git repository
