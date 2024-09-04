@@ -114,6 +114,19 @@ function _build_prompt() {
 
     _np_color "$color"
   }
+  
+  local status_code_color
+  status_code_color="$(_status_code_color)"
+
+  function _status_code_display() {
+    case $exit_code in
+      0 | 1);;
+      *)
+        # Other status code. Display
+        echo "$(_np_color)(${status_code_color}$exit_code$(_np_color))"
+        ;;
+    esac
+  }
 
   # Print git branch if current directory is a git repository
   function _git_branch() {
@@ -122,7 +135,7 @@ function _build_prompt() {
     fi
   }
   
-  PS1="$(_status_code_color)[\t] $(_git_branch)$(_np_color '37;44')\u@\H$(_np_color) $(_np_color '1;34')\W$(_np_color)\$ "
+  PS1="${status_code_color}[\t]$(_status_code_display) $(_git_branch)$(_np_color '37;44')\u@\H$(_np_color) $(_np_color '1;34')\W$(_np_color)\$ "
 }
 
 PROMPT_COMMAND=_build_prompt
