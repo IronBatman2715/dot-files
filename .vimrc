@@ -84,7 +84,7 @@ if exists("+undofile")
     " feature only present in 7.3+
 
     if isdirectory( $HOME . '/.vim/undo' ) == 0
-	:silent !mkdir -m 700 -p ~/.vim/undo > /dev/null 2>&1
+        :silent !mkdir -m 700 -p ~/.vim/undo > /dev/null 2>&1
     endif
 
     set undodir=~/.vim/undo
@@ -136,8 +136,8 @@ set wildignore=*.docx,*.jpg,*.png,*.gif,*.pdf,*.pyc,*.exe,*.flv,*.img,*.xlsx
 " `zR` to open all folds
 " `zM` to close all folds
 augroup filetype_vim
-  autocmd!
-  autocmd FileType vim setlocal foldmethod=marker
+    autocmd!
+    autocmd FileType vim setlocal foldmethod=marker
 augroup END
 
 " }}}
