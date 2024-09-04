@@ -41,7 +41,7 @@ set showmode
 " }}}
 
 " WHITESPACES --------------------------------------------------------------- {{{
-"               test
+
 " Set auto-indent
 set autoindent
 
