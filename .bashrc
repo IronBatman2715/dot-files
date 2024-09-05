@@ -60,7 +60,7 @@ fi
 # Returns:
 #   The color code or, if supplied, the string colored by said color code.
 ########################################
-function color() {
+function _color() {
   case $# in
     2)
       # Color $2 with $1
@@ -89,15 +89,15 @@ function _build_prompt() {
     case $# in
       2)
         # Color $2 with $1
-        output="$(color "$1" "$2")"
+        output="$(_color "$1" "$2")"
         ;;
       1)
         # Echo specified color
-        output="$(color "$1")"
+        output="$(_color "$1")"
         ;;
       *)
         # Reset to default color
-        output="$(color)"
+        output="$(_color)"
         ;;
     esac
 
@@ -156,8 +156,8 @@ PROMPT_COMMAND=_build_prompt
 function netinfo() {
   local output=''
 
-  output+="$(color '0;36' 'DATE'): $(date)"
-  output+="\n$(color '0;36' 'USER@HOSTNAME'): $(whoami)@$(hostname)"
+  output+="$(_color '0;36' 'DATE'): $(date)"
+  output+="\n$(_color '0;36' 'USER@HOSTNAME'): $(whoami)@$(hostname)"
 
   local local_ip_addr=''
   local router_local_ip_addr=''
@@ -184,9 +184,9 @@ function netinfo() {
       ;;
   esac
 
-  output+="\n$(color '0;36' 'LOCAL IP ADDR'): $local_ip_addr"
-  output+="\n$(color '0;36' 'ROUTER LOCAL IP ADDR'): $router_local_ip_addr"
-  output+="\n$(color '0;36' 'PUBLIC IP ADDR'): $(curl -s ipinfo.io/ip)"
+  output+="\n$(_color '0;36' 'LOCAL IP ADDR'): $local_ip_addr"
+  output+="\n$(_color '0;36' 'ROUTER LOCAL IP ADDR'): $router_local_ip_addr"
+  output+="\n$(_color '0;36' 'PUBLIC IP ADDR'): $(curl -s ipinfo.io/ip)"
 
   echo -e "$output"
 }
