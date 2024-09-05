@@ -40,6 +40,19 @@ function util::color() {
 }
 
 ########################################
+# Alias for `util::color` with '0;34' as the color.
+# Globals:
+# Arguments:
+#   1: String to be colored.
+# Outputs:
+# Returns:
+#   See `util::color`.
+########################################
+function util::color_url() {
+  util::color '0;34' "$1"
+}
+
+########################################
 # Alias for `util::color` with '0;36' as the color.
 # Globals:
 # Arguments:
@@ -303,7 +316,7 @@ function main() {
         echo "    [DEBUG] Using 'jq'"
       fi
     else      
-      if ! util::yn_prompt "    Could not find 'jq' (https://github.com/jqlang/jq) installed on your system. This is needed for $(util::color_warn stable) JSON parsing.\n\tProceed with rough JSON parsing using grep?"; then
+      if ! util::yn_prompt "    Could not find 'jq' ($(util::color_url https://github.com/jqlang/jq)) installed on your system. This is needed for $(util::color_warn stable) JSON parsing.\n\tProceed with rough JSON parsing using grep?"; then
         exit 1
       fi
       USE_JQ=1
@@ -323,7 +336,7 @@ function main() {
       fi
 
       local -r GH_REQUEST_URL="https://api.github.com/users/$USERNAME"
-      echo -e "    Sending request to $(util::color_path "$GH_REQUEST_URL")"
+      echo -e "    Sending request to $(util::color_url "$GH_REQUEST_URL")"
       if command -v curl &> /dev/null; then
         if [[ $DEBUG == 1 ]]; then
           echo "    [DEBUG] Using 'curl'"
@@ -376,7 +389,7 @@ function main() {
     case "$GIT_LFS_INSTALL_STATUS" in
       0) DO_GIT_LFS=0;;
       *)
-         if util::yn_prompt "    Git-LFS (https://git-lfs.com/) is NOT installed. Enable in $(util::color_path .gitconfig) anyway?" 1; then
+         if util::yn_prompt "    Git-LFS ($(util::color_url https://git-lfs.com/)) is NOT installed. Enable in $(util::color_path .gitconfig) anyway?" 1; then
            DO_GIT_LFS=0
          fi
     esac
