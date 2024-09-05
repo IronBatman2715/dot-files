@@ -5,6 +5,80 @@
 set -e # exit immediately on error
 
 ########################################
+# Color string.
+#
+# Some ANSI color escape codesAttribute codes:
+# 0=none 1=bold 4=underscore 5=blink 7=reverse 8=concealed
+# Text color codes:
+# 30=black 31=red 32=green 33=yellow 34=blue 35=magenta 36=cyan 37=white
+# Background color codes:
+# 40=black 41=red 42=green 43=yellow 44=blue 45=magenta 46=cyan 47=white
+#
+# Globals:
+# Arguments:
+#   1: [OPTIONAL] ANSI color escape code. Defaults to unset color modifications.
+#   2: [OPTIONAL] String to be colored.
+# Outputs:
+# Returns:
+#   The color code or, if supplied, the string colored by said color code.
+########################################
+function util::color() {
+  case $# in
+    2)
+      # Color $2 with $1
+      printf "\e[%sm%s\e[0m" "$1" "$2"
+      ;;
+    1)
+      # Echo specified color
+      printf "\e[%sm" "$1"
+      ;;
+    *)
+      # Reset to default color
+      printf "\e[0m"
+      ;;
+  esac
+}
+
+########################################
+# Alias for `util::color` with '0;36' as the color.
+# Globals:
+# Arguments:
+#   1: String to be colored.
+# Outputs:
+# Returns:
+#   See `util::color`.
+########################################
+function util::color_path() {
+  util::color '0;36' "$1"
+}
+
+########################################
+# Alias for `util::color` with '0;33' as the color.
+# Globals:
+# Arguments:
+#   1: String to be colored.
+# Outputs:
+# Returns:
+#   See `util::color`.
+########################################
+function util::color_warn() {
+  util::color '0;33' "$1"
+}
+
+########################################
+# Alias for `util::color` with '0;31' as the color.
+# Globals:
+# Arguments:
+#   1: String to be colored.
+# Outputs:
+# Returns:
+#   See `util::color`.
+########################################
+function util::color_error() {
+  util::color '0;31' "$1"
+}
+
+########################################
 # Prompt user via stdout/stdin with a yes or no question.
 # Globals:
 # Arguments:
@@ -36,7 +110,7 @@ function util::yn_prompt() {
     elif [[ ${INPUT,,} == "n" || ($INPUT == "" && $2 != 0) ]]; then
       return 1
     else
-      echo -e "\e[0;31mInvalid entry\e[0m: $INPUT"
+      echo -e "$(util::color_error 'Invalid entry'): $INPUT"
       read -rp "$(echo -e "Try again $yn_brackets")" INPUT
     fi
   done
@@ -61,40 +135,41 @@ function util::create_file_symlink() {
   local -r SYMLINK_PATH="$2"
 
   if [[ ! -f "$SRC_PATH" ]]; then
-    echo -e "  Creating empty \e[0;36m$SRC_PATH\e[0m"
+    echo -e "  Creating empty $(util::color_path "$SRC_PATH")"
     touch "$SRC_PATH"
   fi
 
   # If nothing exists at $SYMLINK_PATH, simply create symlink and return
   if [[ ! -e "$SYMLINK_PATH" ]]; then
-    echo -e "  Creating symlink at \e[0;36m$SYMLINK_PATH\e[0m pointing to \e[0;36m$SRC_PATH\e[0m"
+    echo -e "  Creating symlink at $(util::color_path "$SYMLINK_PATH") pointing to $(util::color_path "$SRC_PATH")"
     ln -s "$SRC_PATH" "$SYMLINK_PATH"
     return
   fi
 
-  local prompt="  Something already exists at \e[0;36m$SYMLINK_PATH\e[0m. Overwrite?"
+  local prompt
+  prompt="  Something already exists at $(util::color_path "$SYMLINK_PATH"). Overwrite?"
   if [[ -L "$SYMLINK_PATH" ]]; then
     local symlink_real_path
     symlink_real_path="$(realpath "$SYMLINK_PATH")"
 
     if [[ "$symlink_real_path" == "$SRC_PATH" ]]; then
-      echo -e "  \e[0;36m$SYMLINK_PATH\e[0m is already a symlink to \e[0;36m$SRC_PATH\e[0m. Skipping"
+      echo -e "  $(util::color_path "$SYMLINK_PATH") is already a symlink to $(util::color_path "$SRC_PATH"). Skipping"
       return
     fi
 
     # Update prompt with new information
-    prompt="  \e[0;36m$SYMLINK_PATH\e[0m is already a symlink BUT it points to a different location (\e[0;36m$symlink_real_path\e[0m). Overwrite?"
+    prompt="  $(util::color_path "$SYMLINK_PATH") is already a symlink BUT it points to a different location ($(util::color_path "$symlink_real_path")). Overwrite?"
   fi
   readonly prompt
 
   if util::yn_prompt "$prompt" 0; then
-    echo -e "    Overwriting \e[0;36m$SYMLINK_PATH\e[0m"
+    echo -e "    Overwriting $(util::color_path "$SYMLINK_PATH")"
     rm -rf "$SYMLINK_PATH"
 
-    echo -e "    Creating symlink at \e[0;36m$SYMLINK_PATH\e[0m pointing to \e[0;36m$SRC_PATH\e[0m"
+    echo -e "    Creating symlink at $(util::color_path "$SYMLINK_PATH") pointing to $(util::color_path "$SRC_PATH")"
     ln -s "$SRC_PATH" "$SYMLINK_PATH"
   else
-    echo -e "    Skipped install of \e[0;36m$1\e[0m"
+    echo -e "    Skipped install of $(util::color_path "$1")"
   fi
 }
 
@@ -173,11 +248,11 @@ function main() {
       exit 1;;
   esac
   readonly OSTYPE_DESCRIPTOR
-  echo -e "Identified this as a \e[0;36m$OSTYPE_DESCRIPTOR\e[0m system."
+  echo -e "Identified this as a $(util::color_path "$OSTYPE_DESCRIPTOR") system."
 
   if [[ "$OSTYPE" == "msys" ]]; then
-    if ! util::yn_prompt "Confirm that you have read \e[0;36mREADME\e[0m installation notes for $OSTYPE_DESCRIPTOR?"; then
-      echo -e "  \e[0;31mExiting\e[0m due to unconfirmed setup"
+    if ! util::yn_prompt "Confirm that you have read $(util::color_path README) installation notes for $OSTYPE_DESCRIPTOR?"; then
+      echo -e "  $(util::color_error Exiting) due to unconfirmed setup"
       exit 1
     fi
 
@@ -192,7 +267,7 @@ function main() {
   local -r TEMP_DIR="$PROJECT_DIR/.temp"
   if [[ -e "$TEMP_DIR" ]]; then
     if [[ $DEBUG == 0 ]]; then
-      echo -e "Delete or rename \e[0;36m$TEMP_DIR\e[0m. As this program needs to create a temporary directory there."
+      echo -e "Delete or rename $(util::color_path "$TEMP_DIR"). As this program needs to create a temporary directory there."
       exit 1
     fi
   else
@@ -217,9 +292,9 @@ function main() {
 
   echo "Generating other files"
 
-  echo -e "  Generating .gitconfig (this will \e[0;33moverwrite\e[0m \e[0;36m$HOME_DIR/.gitconfig\e[0m if present)"
+  echo -e "  Generating .gitconfig (this will $(util::color_warn overwrite) $(util::color_path "$HOME_DIR/.gitconfig") if present)"
   local USERNAME
-  read -rp $'    Enter GitHub username (leave blank to skip \e[0;36m.gitconfig\e[0m): ' USERNAME
+  read -rp $'    Enter GitHub username (leave blank to skip $(util::color_path .gitconfig)): ' USERNAME
   if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
     # Verify if 'jq' is available
     local USE_JQ=0
@@ -228,7 +303,7 @@ function main() {
         echo "    [DEBUG] Using 'jq'"
       fi
     else      
-      if ! util::yn_prompt "    Could not find 'jq' (https://github.com/jqlang/jq) installed on your system. This is needed for \e[0;33mstable\e[0m JSON parsing.\n\tProceed with rough JSON parsing using grep?"; then
+      if ! util::yn_prompt "    Could not find 'jq' (https://github.com/jqlang/jq) installed on your system. This is needed for $(util::color_warn stable) JSON parsing.\n\tProceed with rough JSON parsing using grep?"; then
         exit 1
       fi
       USE_JQ=1
@@ -248,7 +323,7 @@ function main() {
       fi
 
       local -r GH_REQUEST_URL="https://api.github.com/users/$USERNAME"
-      echo -e "    Sending request to \e[0;36m$GH_REQUEST_URL\e[0m"
+      echo -e "    Sending request to $(util::color_path "$GH_REQUEST_URL")"
       if command -v curl &> /dev/null; then
         if [[ $DEBUG == 1 ]]; then
           echo "    [DEBUG] Using 'curl'"
@@ -294,7 +369,7 @@ function main() {
 
     # Prompt and handle Git-LFS option
     local DO_GIT_LFS=1
-    if util::yn_prompt "    Enable Git-LFS in \e[0;36m.gitconfig\e[0m? (still need to install on your system)" 0; then
+    if util::yn_prompt "    Enable Git-LFS in $(util::color_path .gitconfig)? (still need to install on your system)" 0; then
       if [[ $DEBUG == 1 ]]; then
         echo "    [DEBUG] Enabling Git-LFS"
       fi
@@ -309,12 +384,12 @@ function main() {
       "linux-gnu") AUTO_CRLF='input';;
       "msys")      AUTO_CRLF='true';;
     esac
-    echo -e "    Setting \e[0;36mcore.autocrlf\e[0m to \e[0;36m$AUTO_CRLF\e[0m since this is a \e[0;36m$OSTYPE_DESCRIPTOR\e[0m system. "
+    echo -e "    Setting $(util::color_path core.autocrlf) to $(util::color_path $AUTO_CRLF) since this is a $(util::color_path "$OSTYPE_DESCRIPTOR") system. "
     readonly AUTO_CRLF
 
     # Prompt and handle git text editor (used for commit messages and such)
     local GIT_EDITOR
-    read -rp $'    Enter Git text editor executable (default: \e[0;36mvim\e[0m): ' GIT_EDITOR
+    read -rp $'    Enter Git text editor executable (default: $(util::color_path vim)): ' GIT_EDITOR
     if [[ "$GIT_EDITOR" == "" ]]; then
       if [[ $DEBUG == 1 ]]; then
         echo "    [DEBUG] Setting \$GIT_EDITOR to default value"
@@ -326,7 +401,7 @@ function main() {
     # --- End parsing values for .gitconfig --- #
 
     # Generate .gitconfig in temp directory and parse in values
-    echo -e "    Generating \e[0;36m.gitconfig\e[0m based on \e[0;36m$PROJECT_DIR/template.gitconfig\e[0m"
+    echo -e "    Generating $(util::color_path .gitconfig) based on $(util::color_path "$PROJECT_DIR/template.gitconfig")"
     local -r TEMP_GIT_CONFIG="$TEMP_DIR/.gitconfig"
     cp "$PROJECT_DIR/template.gitconfig" "$TEMP_GIT_CONFIG"
     if [[ $DO_GIT_LFS == 0 ]]; then
@@ -339,11 +414,11 @@ function main() {
     sed -i "s/##GIT_EDITOR##/$GIT_EDITOR/g" "$TEMP_GIT_CONFIG"
 
     if [[ $DEBUG == 1 ]]; then
-      echo -e "    [DEBUG] Copying \e[0;36m$TEMP_GIT_CONFIG\e[0m to \e[0;36m$HOME_DIR/.gitconfig\e[0m"
+      echo -e "    [DEBUG] Copying $(util::color_path "$TEMP_GIT_CONFIG") to $(util::color_path "$HOME_DIR/.gitconfig")"
     fi
     cp "$TEMP_GIT_CONFIG" "$HOME_DIR/.gitconfig"
   else
-    echo -e "    Skipping \e[0;36m.gitconfig\e[0m"
+    echo -e "    Skipping $(util::color_path .gitconfig)"
   fi
 
 
