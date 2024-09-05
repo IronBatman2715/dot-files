@@ -42,14 +42,24 @@ fi
 
 ## Colors
 
-# Attribute codes:
+########################################
+# Color string.
+#
+# Some ANSI color escape codesAttribute codes:
 # 0=none 1=bold 4=underscore 5=blink 7=reverse 8=concealed
 # Text color codes:
 # 30=black 31=red 32=green 33=yellow 34=blue 35=magenta 36=cyan 37=white
 # Background color codes:
 # 40=black 41=red 42=green 43=yellow 44=blue 45=magenta 46=cyan 47=white
-
-# Color escape sequences
+#
+# Globals:
+# Arguments:
+#   1: [OPTIONAL] ANSI color escape code. Defaults to unset color modifications.
+#   2: [OPTIONAL] String to be colored.
+# Outputs:
+# Returns:
+#   The color code or, if supplied, the string colored by said color code.
+########################################
 function color() {
   case $# in
     2)
