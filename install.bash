@@ -294,7 +294,7 @@ function main() {
 
   echo -e "  Generating .gitconfig (this will $(util::color_warn overwrite) $(util::color_path "$HOME_DIR/.gitconfig") if present)"
   local USERNAME
-  read -rp $'    Enter GitHub username (leave blank to skip $(util::color_path .gitconfig)): ' USERNAME
+  read -rp "    Enter GitHub username (leave blank to skip $(util::color_path .gitconfig)): " USERNAME
   if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
     # Verify if 'jq' is available
     local USE_JQ=0
@@ -389,7 +389,7 @@ function main() {
 
     # Prompt and handle git text editor (used for commit messages and such)
     local GIT_EDITOR
-    read -rp $'    Enter Git text editor executable (default: $(util::color_path vim)): ' GIT_EDITOR
+    read -rp "    Enter Git text editor executable (default: $(util::color_path vim)): " GIT_EDITOR
     if [[ "$GIT_EDITOR" == "" ]]; then
       if [[ $DEBUG == 1 ]]; then
         echo "    [DEBUG] Setting \$GIT_EDITOR to default value"
