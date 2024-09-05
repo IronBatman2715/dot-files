@@ -154,7 +154,7 @@ function netinfo() {
   case "$OSTYPE" in
     "linux-gnu")
       local local_ip_info
-	  local_ip_info="$(ip route get 1.1.1.1)"
+      local_ip_info="$(ip route get 1.1.1.1)"
 
       local_ip_addr="$(echo "$local_ip_info" | head -1 | cut -f7 -d' ')"
       router_local_ip_addr="$(echo "$local_ip_info" | head -1 | cut -f3 -d' ')"
@@ -162,7 +162,7 @@ function netinfo() {
     "msys")
       # Bash for Windows (MinGW)
       local local_ip_info
-	  local_ip_info="$(ipconfig)"
+      local_ip_info="$(ipconfig)"
 
       local_ip_addr="$(echo "$local_ip_info" | grep 'IPv4 Address' | awk '{print $NF}')"
       router_local_ip_addr="$(echo "$local_ip_info" | grep -A 1 'Default Gateway' | tail -n 1 | awk '{print $1}')"
