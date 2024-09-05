@@ -2,6 +2,8 @@
 #
 # Install dot files with user prompts for options and verification of install process.
 
+set -e # exit immediately on error
+
 ########################################
 # Prompt user via stdout/stdin with a yes or no question.
 # Globals:
