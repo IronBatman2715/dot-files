@@ -199,16 +199,25 @@ function main() {
     mkdir "$TEMP_DIR"
   fi
 
+  local HOME_DIR="$HOME"
+  if [[ $DEBUG == 1 ]]; then
+    HOME_DIR="$TEMP_DIR/dummy_home"
+    if [[ ! -e "$HOME_DIR" ]]; then
+      mkdir "$HOME_DIR"
+    fi
+  fi
+  readonly HOME_DIR
+
   echo "Creating file symlinks"
-  util::create_file_symlink "$PROJECT_DIR/.bash_aliases"        "$HOME/.bash_aliases"
-  util::create_file_symlink "$PROJECT_DIR/.bash_profile"        "$HOME/.bash_profile"
-  util::create_file_symlink "$PROJECT_DIR/.bash_program_setups" "$HOME/.bash_program_setups"
-  util::create_file_symlink "$PROJECT_DIR/.bashrc"              "$HOME/.bashrc"
-  util::create_file_symlink "$PROJECT_DIR/.vimrc"               "$HOME/.vimrc"
+  util::create_file_symlink "$PROJECT_DIR/.bash_aliases"        "$HOME_DIR/.bash_aliases"
+  util::create_file_symlink "$PROJECT_DIR/.bash_profile"        "$HOME_DIR/.bash_profile"
+  util::create_file_symlink "$PROJECT_DIR/.bash_program_setups" "$HOME_DIR/.bash_program_setups"
+  util::create_file_symlink "$PROJECT_DIR/.bashrc"              "$HOME_DIR/.bashrc"
+  util::create_file_symlink "$PROJECT_DIR/.vimrc"               "$HOME_DIR/.vimrc"
 
   echo "Generating other files"
 
-  echo -e "  Generating .gitconfig (this will \e[0;33moverwrite\e[0m \e[0;36m$HOME/.gitconfig\e[0m if present)"
+  echo -e "  Generating .gitconfig (this will \e[0;33moverwrite\e[0m \e[0;36m$HOME_DIR/.gitconfig\e[0m if present)"
   local USERNAME
   read -rp $'    Enter GitHub username (leave blank to skip \e[0;36m.gitconfig\e[0m): ' USERNAME
   if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
@@ -330,10 +339,9 @@ function main() {
     sed -i "s/##GIT_EDITOR##/$GIT_EDITOR/g" "$TEMP_GIT_CONFIG"
 
     if [[ $DEBUG == 1 ]]; then
-      echo -e "    [DEBUG] Skipping copy of \e[0;36m.gitconfig\e[0m to home directory"
-    else
-      cp "$TEMP_GIT_CONFIG" "$HOME/.gitconfig"
+      echo -e "    [DEBUG] Copying \e[0;36m$TEMP_GIT_CONFIG\e[0m to \e[0;36m$HOME_DIR/.gitconfig\e[0m"
     fi
+    cp "$TEMP_GIT_CONFIG" "$HOME_DIR/.gitconfig"
   else
     echo -e "    Skipping \e[0;36m.gitconfig\e[0m"
   fi
