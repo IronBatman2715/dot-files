@@ -285,7 +285,7 @@ function main() {
 
     # Prompt and handle Git-LFS option
     local DO_GIT_LFS=1
-    if util::yn_prompt "    Enable Git-LFS in \e[0;36m$HOME/.gitconfig\e[0m? (still need to install on your system)" 0; then
+    if util::yn_prompt "    Enable Git-LFS in \e[0;36m.gitconfig\e[0m? (still need to install on your system)" 0; then
       if [[ $DEBUG == 1 ]]; then
         echo "    [DEBUG] Enabling Git-LFS"
       fi
@@ -317,7 +317,7 @@ function main() {
     # --- End parsing values for .gitconfig --- #
 
     # Generate .gitconfig in temp directory and parse in values
-    echo -e "    Generating \e[0;36m$HOME/.gitconfig\e[0m based on \e[0;36m$PROJECT_DIR/template.gitconfig\e[0m"
+    echo -e "    Generating \e[0;36m.gitconfig\e[0m based on \e[0;36m$PROJECT_DIR/template.gitconfig\e[0m"
     local -r TEMP_GIT_CONFIG="$TEMP_DIR/.gitconfig"
     cp "$PROJECT_DIR/template.gitconfig" "$TEMP_GIT_CONFIG"
     if [[ $DO_GIT_LFS == 0 ]]; then
