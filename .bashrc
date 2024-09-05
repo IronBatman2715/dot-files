@@ -54,7 +54,7 @@ function color() {
   case $# in
     2)
       # Color $2 with $1
-      printf "\e[%sm%s" "$1" "$2"
+      printf "\e[%sm%s\e[0m" "$1" "$2"
       ;;
     1)
       # Echo specified color
@@ -146,8 +146,8 @@ PROMPT_COMMAND=_build_prompt
 function netinfo() {
   local output=''
 
-  output+="$(color '0;36')DATE$(color): $(date)"
-  output+="\n$(color '0;36')USER@HOSTNAME$(color): $(whoami)@$(hostname)"
+  output+="$(color '0;36' 'DATE'): $(date)"
+  output+="\n$(color '0;36' 'USER@HOSTNAME'): $(whoami)@$(hostname)"
 
   local local_ip_addr=''
   local router_local_ip_addr=''
@@ -174,9 +174,9 @@ function netinfo() {
       ;;
   esac
 
-  output+="\n$(color '0;36')LOCAL IP ADDR$(color): $local_ip_addr"
-  output+="\n$(color '0;36')ROUTER LOCAL IP ADDR$(color): $router_local_ip_addr"
-  output+="\n$(color '0;36')PUBLIC IP ADDR$(color): $(curl -s ipinfo.io/ip)"
+  output+="\n$(color '0;36' 'LOCAL IP ADDR'): $local_ip_addr"
+  output+="\n$(color '0;36' 'ROUTER LOCAL IP ADDR'): $router_local_ip_addr"
+  output+="\n$(color '0;36' 'PUBLIC IP ADDR'): $(curl -s ipinfo.io/ip)"
 
   echo -e "$output"
 }
