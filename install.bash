@@ -367,14 +367,21 @@ function main() {
     fi
     readonly USER_ID
 
-    # Prompt and handle Git-LFS option
+    # Set Git-LFS settings based on if it is installed
     local DO_GIT_LFS=1
-    if util::yn_prompt "    Enable Git-LFS in $(util::color_path .gitconfig)? (still need to install on your system)" 0; then
-      if [[ $DEBUG == 1 ]]; then
-        echo "    [DEBUG] Enabling Git-LFS"
-      fi
-
-      DO_GIT_LFS=0
+    set +e # temporarily disable
+    git lfs > /dev/null 2>&1
+    local -r GIT_LFS_INSTALL_STATUS="$?"
+    set -e
+    case "$GIT_LFS_INSTALL_STATUS" in
+      0) DO_GIT_LFS=0;;
+      *)
+         if util::yn_prompt "    Git-LFS (https://git-lfs.com/) is NOT installed. Enable in $(util::color_path .gitconfig) anyway?" 1; then
+           DO_GIT_LFS=0
+         fi
+    esac
+    if [[ $DO_GIT_LFS == 0 ]]; then
+      echo "    Setting $(util::color_path 'filter "lfs"') for Git-LFS"
     fi
     readonly DO_GIT_LFS
 
