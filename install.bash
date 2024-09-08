@@ -160,7 +160,6 @@ function util::create_file_symlink() {
   fi
 
   local prompt
-  prompt="  Something already exists at $(util::color_path "$SYMLINK_PATH"). Overwrite?"
   if [[ -L "$SYMLINK_PATH" ]]; then
     local symlink_real_path
     symlink_real_path="$(realpath "$SYMLINK_PATH")"
@@ -172,6 +171,8 @@ function util::create_file_symlink() {
 
     # Update prompt with new information
     prompt="  $(util::color_path "$SYMLINK_PATH") is already a symlink BUT it points to a different location ($(util::color_path "$symlink_real_path")). Overwrite?"
+  else
+    prompt="  Something already exists at $(util::color_path "$SYMLINK_PATH"). Overwrite?"
   fi
   readonly prompt
 
@@ -182,7 +183,7 @@ function util::create_file_symlink() {
     echo -e "    Creating symlink at $(util::color_path "$SYMLINK_PATH") pointing to $(util::color_path "$SRC_PATH")"
     ln -s "$SRC_PATH" "$SYMLINK_PATH"
   else
-    echo -e "    Skipped install of $(util::color_path "$1")"
+    echo -e "    Skipped install of $(util::color_path "$SRC_PATH")"
   fi
 }
 
