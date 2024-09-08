@@ -421,9 +421,9 @@ function main() {
     # --- End parsing values for .gitconfig --- #
 
     # Generate .gitconfig in temp directory and parse in values
-    echo -e "    Generating $(util::color_path .gitconfig) based on $(util::color_path "$PROJECT_DIR/template.gitconfig")"
+    echo -e "    Generating $(util::color_path .gitconfig) based on $(util::color_path "$PROJECT_DIR/templates/.gitconfig")"
     local -r TEMP_GIT_CONFIG="$TEMP_DIR/.gitconfig"
-    cp "$PROJECT_DIR/template.gitconfig" "$TEMP_GIT_CONFIG"
+    cp "$PROJECT_DIR/templates/.gitconfig" "$TEMP_GIT_CONFIG"
     if [[ $DO_GIT_LFS == 0 ]]; then
       local -r GIT_LFS_STR=$'[filter "lfs"]\n  smudge = git-lfs smudge -- %f\n  process = git-lfs filter-process\n  required = true\n  clean = git-lfs clean -- %f'
       echo "$GIT_LFS_STR" >> "$TEMP_GIT_CONFIG"
