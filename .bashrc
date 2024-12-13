@@ -148,7 +148,7 @@ function _build_prompt() {
   PS1="${status_code_color}[\t]$(_status_code_display) $(_git_branch)$(_np_color '37;44')\u@\H$(_np_color) $(_np_color '1;34')\W$(_np_color)\$ "
 }
 
-PROMPT_COMMAND=_build_prompt
+PROMPT_COMMAND="history -a; _build_prompt"
 
 ## Custom functions
 
