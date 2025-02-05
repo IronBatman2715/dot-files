@@ -296,7 +296,7 @@ function main() {
   local -r TEMP_DIR="$PROJECT_DIR/.temp"
   if [[ -e "$TEMP_DIR" ]]; then
     if [[ $DEBUG == 0 ]]; then
-      echo -e "Delete or rename $(util::color_path "$TEMP_DIR"). As this program needs to create a temporary directory there."
+      echo -e "Delete or rename $(util::color_path "$TEMP_DIR"). This program needs to create a temporary directory there."
       exit 1
     fi
   else
