@@ -312,10 +312,17 @@ function main() {
   fi
   readonly HOME_DIR
 
+  if [[ ! -f "$PROJECT_DIR/.bash_system" ]]; then
+    echo -e "Creating empty $(util::color_path "$PROJECT_DIR/.bash_system") from template"
+    cp "$PROJECT_DIR/templates/.bash_system" "$PROJECT_DIR/.bash_system"
+  else
+    echo -e "Leaving pre-existing $(util::color_path "$PROJECT_DIR/.bash_system")"
+  fi
+
   echo "Creating file symlinks"
   util::create_file_symlink "$PROJECT_DIR/.bash_aliases"        "$HOME_DIR/.bash_aliases"
   util::create_file_symlink "$PROJECT_DIR/.bash_profile"        "$HOME_DIR/.bash_profile"
-  util::create_file_symlink "$PROJECT_DIR/.bash_program_setups" "$HOME_DIR/.bash_program_setups"
+  util::create_file_symlink "$PROJECT_DIR/.bash_system"         "$HOME_DIR/.bash_system"
   util::create_file_symlink "$PROJECT_DIR/.bashrc"              "$HOME_DIR/.bashrc"
   util::create_file_symlink "$PROJECT_DIR/.vimrc"               "$HOME_DIR/.vimrc"
 

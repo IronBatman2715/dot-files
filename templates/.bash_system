@@ -1,0 +1,7 @@
+#!/bin/bash
+#
+# System specific setups/scripts.
+#
+# WILL NEED TO MOVE SETUPS HERE MANUALLY AS PROGRAMS TYPICALLY WRITE TO .bashrc OR .bash_profile
+# 
+# Ex: adding pnpm to PATH, script to update manually downloaded binaries, etc.

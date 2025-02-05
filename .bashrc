@@ -123,9 +123,9 @@ function netinfo() {
   echo -e "$output"
 }
 
-# Run setups for installed programs if present.
+# System specific setups/scripts.
 # 
 # WILL NEED TO MOVE SETUPS THERE MANUALLY AS PROGRAMS TYPICALLY WRITE HERE OR TO .bash_profile
-if [ -f ~/.bash_program_setups ]; then
-  . ~/.bash_program_setups
+if [ -f ~/.bash_system ]; then
+  . ~/.bash_system
 fi
