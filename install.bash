@@ -263,6 +263,21 @@ function main() {
   esac
   readonly OSTYPE_DESCRIPTOR
   echo -e "Identified this as a $(util::color_path "$OSTYPE_DESCRIPTOR") system."
+  
+  # Feb 5 2025
+  # At time of writing, starship is available via standard package management on all platforms I use except
+  #   Debian 12 or older (this of course means corresponding Ubuntu derivatives as well).
+  #   For now, manual management via their install script will suffice. Debian 13 should not be too far out.
+  # 
+  # TODO: move older systems to package manager install rather than manual script when applicable
+  if command -v starship &> /dev/null; then
+    if [[ $DEBUG == 1 ]]; then
+      echo "    [DEBUG] Verified 'starship' command is available"
+    fi
+  else      
+    echo -e "$(util::color_error Error): Could not find 'starship' ($(util::color_url https://starship.rs/)) installed on your system. This is needed for the shell prompt."
+    exit 1
+  fi
 
   if [[ "$OSTYPE" == "msys" ]]; then
     if ! util::yn_prompt "Confirm that you have read $(util::color_path README) installation notes for $OSTYPE_DESCRIPTOR?"; then

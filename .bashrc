@@ -79,76 +79,8 @@ function _color() {
 
 ## Prompt
 
-
-function _build_prompt() {
-  local exit_code="$?" # must save at start so other commands do not overwrite
-
-  # Bash prompt Non-printing color escape sequences
-  function _np_color() {
-    local output=''
-    case $# in
-      2)
-        # Color $2 with $1
-        output="$(_color "$1" "$2")"
-        ;;
-      1)
-        # Echo specified color
-        output="$(_color "$1")"
-        ;;
-      *)
-        # Reset to default color
-        output="$(_color)"
-        ;;
-    esac
-
-    printf '\001%s\002' "$output"
-  }
-
-  # Set color to indicate status of last command
-  function _status_code_color() {
-    local color
-    case $exit_code in
-      0)
-        # Last command was successful. Normal and green
-        color='0;32'
-        ;;
-      1)
-        # Last command FAILED. Bold and red
-        color='1;31'
-        ;;
-      *)
-        # Other status code. Normal and yellow
-        color='0;33'
-        ;;
-    esac
-
-    _np_color "$color"
-  }
-  
-  local status_code_color
-  status_code_color="$(_status_code_color)"
-
-  function _status_code_display() {
-    case $exit_code in
-      0 | 1);;
-      *)
-        # Other status code. Display
-        echo "$(_np_color)(${status_code_color}$exit_code$(_np_color))"
-        ;;
-    esac
-  }
-
-  # Print git branch if current directory is a git repository
-  function _git_branch() {
-    if [ -d .git ] ; then
-      printf "$(_np_color)($(_np_color '0;36')%s$(_np_color)) " "$(__git_ps1 '%s')"
-    fi
-  }
-  
-  PS1="${status_code_color}[\t]$(_status_code_display) $(_git_branch)$(_np_color '37;44')\u@\H$(_np_color) $(_np_color '1;34')\W$(_np_color)\$ "
-}
-
-PROMPT_COMMAND="history -a; _build_prompt"
+# https://github.com/starship/starship
+eval "$(starship init bash)"
 
 ## Custom functions
 

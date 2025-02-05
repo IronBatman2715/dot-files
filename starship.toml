@@ -1,0 +1,49 @@
+# Get editor completions based on the config schema
+"$schema" = 'https://starship.rs/config-schema.json'
+
+add_newline = false
+follow_symlinks = true
+
+format = '$time $cmd_duration$git_branch[$username@$hostname](fg:white bg:blue) $directory$status$character'
+
+[time]
+disabled = false
+format = '[\[$time\]]($style)'
+time_format = '%H:%M:%S'
+style = 'green'
+
+[cmd_duration]
+min_time = 500
+show_milliseconds = true
+format = '[$duration](bold yellow) '
+
+[git_branch]
+disabled = false
+format = '\([$branch]($style)\) '
+style = 'cyan'
+
+[username]
+disabled = false
+format = '$user'
+show_always = true
+
+[hostname]
+disabled = false
+format = '$hostname'
+ssh_only = false
+
+[directory]
+disabled = false
+format = '[$path]($style)'
+style = 'bold blue'
+truncation_length = 1
+truncate_to_repo = false # redundant yes but just to be sure
+
+[status]
+disabled = false
+format = ' \([$status]($style)\) '
+style = 'yellow'
+
+[character]
+disabled = false
+format = '\$ '
