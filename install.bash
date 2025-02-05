@@ -312,6 +312,10 @@ function main() {
   fi
   readonly HOME_DIR
 
+  if [[ ! -e "$HOME_DIR/.config" ]]; then
+    mkdir "$HOME_DIR/.config"
+  fi
+
   if [[ ! -f "$PROJECT_DIR/.bash_system" ]]; then
     echo -e "Creating empty $(util::color_path "$PROJECT_DIR/.bash_system") from template"
     cp "$PROJECT_DIR/templates/.bash_system" "$PROJECT_DIR/.bash_system"
@@ -325,6 +329,7 @@ function main() {
   util::create_file_symlink "$PROJECT_DIR/.bash_system"         "$HOME_DIR/.bash_system"
   util::create_file_symlink "$PROJECT_DIR/.bashrc"              "$HOME_DIR/.bashrc"
   util::create_file_symlink "$PROJECT_DIR/.vimrc"               "$HOME_DIR/.vimrc"
+  util::create_file_symlink "$PROJECT_DIR/starship.toml"        "$HOME_DIR/.config/starship.toml"
 
   echo "Generating other files"
 
