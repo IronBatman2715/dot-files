@@ -358,18 +358,19 @@ function main() {
         echo "[DEBUG] Must enter GitHub username at least one time to test further"; exit 1
       fi
 
+      # https://docs.github.com/en/rest/users/users?apiVersion=2022-11-28
       local -r GH_REQUEST_URL="https://api.github.com/users/$USERNAME"
       echo -e "    Sending request to $(util::color_url "$GH_REQUEST_URL")"
       if command -v curl &> /dev/null; then
         if [[ $DEBUG == 1 ]]; then
           echo "    [DEBUG] Using 'curl'"
         fi
-        curl -so "$GH_RES_JSON" "$GH_REQUEST_URL"
+        curl -so "$GH_RES_JSON" -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" "$GH_REQUEST_URL"
       elif command -v wget &> /dev/null; then
         if [[ $DEBUG == 1 ]]; then
           echo "    [DEBUG] Using 'wget'"
         fi
-        wget -qO "$GH_RES_JSON" "$GH_REQUEST_URL"
+        wget -qO "$GH_RES_JSON" --header "Accept: application/vnd.github+json" --header "X-GitHub-Api-Version: 2022-11-28" "$GH_REQUEST_URL"
       else
         echo "Could not execute either 'curl' or 'wget' to fetch GitHub data. Please install one of the two."
         exit 1
