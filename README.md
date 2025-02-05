@@ -6,6 +6,10 @@ Supported environments:
 - Git Bash for Windows
 - GNU Linux
 
+## Pre-requisites
+
+Install [starship](https://starship.rs/) for the command prompt.
+
 ## Install
 
 ### Manual parts
