@@ -341,9 +341,9 @@ function main() {
 
   echo "Generating other files"
 
-  echo -e "  Generating .gitconfig (this will $(util::color_warn overwrite) $(util::color_path "$HOME_DIR/.gitconfig") if present)"
+  echo -e "  Generating Git config (this will (if present) $(util::color_warn delete) $(util::color_path "$HOME_DIR/.gitconfig") *and* $(util::color_warn overwrite) $(util::color_path "$I_XDG_CONFIG_HOME/git/config"))"
   local USERNAME
-  read -rp "    Enter GitHub username (leave blank to skip $(util::color_path .gitconfig)): " USERNAME
+  read -rp "    Enter GitHub username (leave blank to skip generating Git config): " USERNAME
   if [[ "$USERNAME" != "" || $DEBUG == 1 ]]; then
     # Verify if 'jq' is available
     local USE_JQ=0
@@ -362,7 +362,7 @@ function main() {
     fi
     readonly USE_JQ
 
-    # --- Start parsing values for .gitconfig --- #
+    # --- Start parsing values for Git config --- #
 
     # Fetch github user data
     local -r GH_RES_JSON="$TEMP_DIR/gh_api_res.json"
@@ -426,7 +426,7 @@ function main() {
     case "$GIT_LFS_INSTALL_STATUS" in
       0) DO_GIT_LFS=0;;
       *)
-         if util::yn_prompt "    Git-LFS ($(util::color_url https://git-lfs.com/)) is NOT installed. Enable in $(util::color_path .gitconfig) anyway?" 1; then
+         if util::yn_prompt "    Git-LFS ($(util::color_url https://git-lfs.com/)) is NOT installed. Enable anyway?" 1; then
            DO_GIT_LFS=0
          fi
     esac
@@ -455,12 +455,12 @@ function main() {
     fi
     readonly GIT_EDITOR
 
-    # --- End parsing values for .gitconfig --- #
+    # --- End parsing values for Git config --- #
 
-    # Generate .gitconfig in temp directory and parse in values
-    echo -e "    Generating $(util::color_path .gitconfig) based on $(util::color_path "$PROJECT_DIR/templates/.gitconfig")"
-    local -r TEMP_GIT_CONFIG="$TEMP_DIR/.gitconfig"
-    cp "$PROJECT_DIR/templates/.gitconfig" "$TEMP_GIT_CONFIG"
+    # Generate Git config in temp directory and parse in values
+    echo -e "    Generating $(util::color_path "$I_XDG_CONFIG_HOME/git/config") based on $(util::color_path "$PROJECT_DIR/templates/git/config")"
+    local -r TEMP_GIT_CONFIG="$TEMP_DIR/gitconfig"
+    cp "$PROJECT_DIR/templates/git/config" "$TEMP_GIT_CONFIG"
     if [[ $DO_GIT_LFS == 0 ]]; then
       local -r GIT_LFS_STR=$'[filter "lfs"]\n  smudge = git-lfs smudge -- %f\n  process = git-lfs filter-process\n  required = true\n  clean = git-lfs clean -- %f'
       echo "$GIT_LFS_STR" >> "$TEMP_GIT_CONFIG"
@@ -470,12 +470,17 @@ function main() {
     sed -i "s/##AUTO_CRLF##/$AUTO_CRLF/g"   "$TEMP_GIT_CONFIG"
     sed -i "s/##GIT_EDITOR##/$GIT_EDITOR/g" "$TEMP_GIT_CONFIG"
 
-    if [[ $DEBUG == 1 ]]; then
-      echo -e "    [DEBUG] Copying $(util::color_path "$TEMP_GIT_CONFIG") to $(util::color_path "$HOME_DIR/.gitconfig")"
+    if [[ -f "$HOME_DIR/.gitconfig" ]]; then
+      echo -e "    Deleting $(util::color_path "$HOME_DIR/.gitconfig") in favor of $(util::color_path "$I_XDG_CONFIG_HOME/git/config")"
+      rm "$HOME_DIR/.gitconfig"
     fi
-    cp "$TEMP_GIT_CONFIG" "$HOME_DIR/.gitconfig"
+    if [[ $DEBUG == 1 ]]; then
+      echo -e "    [DEBUG] Copying $(util::color_path "$TEMP_GIT_CONFIG") to $(util::color_path "$I_XDG_CONFIG_HOME/git/config")"
+    fi
+    mkdir -p "$I_XDG_CONFIG_HOME/git"
+    cp "$TEMP_GIT_CONFIG" "$I_XDG_CONFIG_HOME/git/config"
   else
-    echo -e "    Skipping $(util::color_path .gitconfig)"
+    echo -e "    Skipping $(util::color_path "$I_XDG_CONFIG_HOME/git/config")"
   fi
 
 
