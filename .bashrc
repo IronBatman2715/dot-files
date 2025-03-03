@@ -29,12 +29,6 @@ shopt -s checkwinsize # update LINES and COLUMNS on window resize if necessary
 
 ## Aliases
 
-# Add color support for common commands
-alias ls="ls --color"
-alias grep="grep --color"
-alias egrep="egrep --color"
-alias fgrep="fgrep --color"
-
 # Run aliases file if present
 if [ -f ~/.bash_aliases ]; then
   . ~/.bash_aliases

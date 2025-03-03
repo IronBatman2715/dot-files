@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Add color support for common commands
+alias ls="ls --color"
+alias grep="grep --color"
+alias egrep="egrep --color"
+alias fgrep="fgrep --color"
+
 # cd
 alias ..="cd .."
 alias ...="cd ../.."
