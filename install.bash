@@ -458,7 +458,7 @@ function main() {
     # --- End parsing values for Git config --- #
 
     # Generate Git config in temp directory and parse in values
-    echo -e "    Generating $(util::color_path "$I_XDG_CONFIG_HOME/git/config") based on $(util::color_path "$PROJECT_DIR/templates/git/config")"
+    echo -e "    Generating $(util::color_path "$I_XDG_CONFIG_HOME/git/config") from $(util::color_path "$PROJECT_DIR/templates/git/config")"
     local -r TEMP_GIT_CONFIG="$TEMP_DIR/gitconfig"
     cp "$PROJECT_DIR/templates/git/config" "$TEMP_GIT_CONFIG"
     if [[ $DO_GIT_LFS == 0 ]]; then
