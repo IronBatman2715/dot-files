@@ -313,24 +313,31 @@ function main() {
   fi
   readonly HOME_DIR
 
-  if [[ ! -e "$HOME_DIR/.config" ]]; then
-    mkdir "$HOME_DIR/.config"
+  # assume default XDG config home for installer
+  local -r I_XDG_CONFIG_HOME="$HOME_DIR/.config"
+  if [[ ! -e "$I_XDG_CONFIG_HOME" ]]; then
+    echo -e "Creating $(util::color_path "$I_XDG_CONFIG_HOME") directory"
+    mkdir "$I_XDG_CONFIG_HOME"
+  fi
+  if [[ ! -e "$I_XDG_CONFIG_HOME/bash" ]]; then
+    echo -e "Creating $(util::color_path "$I_XDG_CONFIG_HOME/bash") directory"
+    mkdir "$I_XDG_CONFIG_HOME/bash"
   fi
 
-  if [[ ! -f "$PROJECT_DIR/.bash_system" ]]; then
-    echo -e "Creating empty $(util::color_path "$PROJECT_DIR/.bash_system") from template"
-    cp "$PROJECT_DIR/templates/.bash_system" "$PROJECT_DIR/.bash_system"
+  if [[ ! -f "$PROJECT_DIR/bash/system" ]]; then
+    echo -e "Creating empty $(util::color_path "$PROJECT_DIR/bash/system") from template"
+    cp "$PROJECT_DIR/templates/bash/system" "$PROJECT_DIR/bash/system"
   else
-    echo -e "Leaving pre-existing $(util::color_path "$PROJECT_DIR/.bash_system")"
+    echo -e "Leaving pre-existing $(util::color_path "$PROJECT_DIR/bash/system")"
   fi
 
   echo "Creating file symlinks"
-  util::create_file_symlink "$PROJECT_DIR/.bash_aliases"        "$HOME_DIR/.bash_aliases"
-  util::create_file_symlink "$PROJECT_DIR/.bash_profile"        "$HOME_DIR/.bash_profile"
-  util::create_file_symlink "$PROJECT_DIR/.bash_system"         "$HOME_DIR/.bash_system"
-  util::create_file_symlink "$PROJECT_DIR/.bashrc"              "$HOME_DIR/.bashrc"
-  util::create_file_symlink "$PROJECT_DIR/.vimrc"               "$HOME_DIR/.vimrc"
-  util::create_file_symlink "$PROJECT_DIR/starship.toml"        "$HOME_DIR/.config/starship.toml"
+  util::create_file_symlink "$PROJECT_DIR/.profile"      "$HOME_DIR/.profile"
+  util::create_file_symlink "$PROJECT_DIR/.bashrc"       "$HOME_DIR/.bashrc"
+  util::create_file_symlink "$PROJECT_DIR/bash/aliases"  "$I_XDG_CONFIG_HOME/bash/aliases"
+  util::create_file_symlink "$PROJECT_DIR/bash/system"   "$I_XDG_CONFIG_HOME/bash/system"
+  util::create_file_symlink "$PROJECT_DIR/.vimrc"        "$HOME_DIR/.vimrc"
+  util::create_file_symlink "$PROJECT_DIR/starship.toml" "$I_XDG_CONFIG_HOME/starship.toml"
 
   echo "Generating other files"
 

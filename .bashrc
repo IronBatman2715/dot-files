@@ -6,18 +6,8 @@ case $- in
     *) return;;
 esac
 
-## Environment variables
-export EDITOR="vim"
-
-# https://wiki.archlinux.org/title/XDG_Base_Directory
-export XDG_CONFIG_HOME="$HOME/.config"
-export XDG_CACHE_HOME="$HOME/.cache"
-export XDG_DATA_HOME="$HOME/.local/share"
-export XDG_STATE_HOME="$HOME/.local/state"
-
-export HISTFILE="$XDG_STATE_HOME/bash/history"
-export STARSHIP_CONFIG="$XDG_CONFIG_HOME/starship.toml"
-export STARSHIP_CACHE="$XDG_CACHE_HOME/starship"
+# Load environment variables
+. ~/.profile
 
 ## Bash completion
 if ! shopt -oq posix; then
@@ -43,9 +33,7 @@ shopt -s checkwinsize # update LINES and COLUMNS on window resize if necessary
 ## Aliases
 
 # Run aliases file if present
-if [ -f ~/.bash_aliases ]; then
-  . ~/.bash_aliases
-fi
+[[ -f "$XDG_CONFIG_HOME/bash/aliases" ]] && . "$XDG_CONFIG_HOME/bash/aliases"
 
 ## Colors
 
@@ -131,8 +119,4 @@ function netinfo() {
 }
 
 # System specific setups/scripts.
-# 
-# WILL NEED TO MOVE SETUPS THERE MANUALLY AS PROGRAMS TYPICALLY WRITE HERE OR TO .bash_profile
-if [ -f ~/.bash_system ]; then
-  . ~/.bash_system
-fi
+[[ -f "$XDG_CONFIG_HOME/bash/system" ]] && . "$XDG_CONFIG_HOME/bash/system"
