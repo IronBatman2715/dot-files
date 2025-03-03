@@ -64,6 +64,7 @@ highlight SpecialKey ctermfg=DarkGray
 " Set the number of lines to save in history.
 set history=1000
 
+" TODO: Move files/data for XDG compliance
 " TODO: `mkdir` calls seem to fill stdout after first run on new install
 
 " Set a central location for temporary (swp) files.

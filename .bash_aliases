@@ -31,3 +31,6 @@ alias gl="git log"
 # tar & gzip
 alias mktarball="tar -czvf"
 alias untarball="tar -zxvf"
+
+# force wget to respect XDG
+alias wget='wget --hsts-file=$XDG_CACHE_HOME/wget-hsts'

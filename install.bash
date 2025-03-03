@@ -241,6 +241,7 @@ function util::parse_json_str() {
   fi
 }
 
+ # TODO: rework locations for XDG compliance
 function main() {
   # Set DEBUG=1 to run in debug mode (i.e. "DEBUG=1 ./install.bash")
   if [[ $DEBUG != 1 ]]; then
