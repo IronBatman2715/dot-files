@@ -98,7 +98,7 @@ endif
 set viewdir=$XDG_STATE_HOME/vim/view | call mkdir(&viewdir,   'p')
 
 " Set info file
-if exists("+viminfo")
+if exists("+viminfo") && !has("nvim")
     set viminfofile=$XDG_STATE_HOME/vim/viminfo
 endif
 
