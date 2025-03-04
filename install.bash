@@ -241,7 +241,6 @@ function util::parse_json_str() {
   fi
 }
 
- # TODO: rework locations for XDG compliance
 function main() {
   # Set DEBUG=1 to run in debug mode (i.e. "DEBUG=1 ./install.bash")
   if [[ $DEBUG != 1 ]]; then
@@ -315,6 +314,8 @@ function main() {
 
   # assume default XDG config home for installer
   local -r I_XDG_CONFIG_HOME="$HOME_DIR/.config"
+
+  # --- Start XDG checks --- #
   if [[ ! -e "$I_XDG_CONFIG_HOME" ]]; then
     echo -e "Creating $(util::color_path "$I_XDG_CONFIG_HOME") directory"
     mkdir "$I_XDG_CONFIG_HOME"
@@ -323,6 +324,23 @@ function main() {
     echo -e "Creating $(util::color_path "$I_XDG_CONFIG_HOME/bash") directory"
     mkdir "$I_XDG_CONFIG_HOME/bash"
   fi
+  if [[ -e "$HOME_DIR/.vimrc" ]]; then
+    if ! util::yn_prompt "Need to delete $(util::color_path "$HOME_DIR/.vimrc"). Otherwise, "$I_XDG_CONFIG_HOME/vim/vimrc" will be ignored.\n\tDelete $(util::color_path "$HOME_DIR/.vimrc")?"; then
+        exit 1
+    fi
+    rm "$HOME_DIR/.vimrc"
+  fi
+  if [[ -e "$HOME_DIR/.vim" ]]; then
+    if ! util::yn_prompt "Need to delete $(util::color_path "$HOME_DIR/.vim"). Otherwise, "$I_XDG_CONFIG_HOME/vim/vimrc" will be ignored.\n\tDelete $(util::color_path "$HOME_DIR/.vim")?"; then
+        exit 1
+    fi
+    rm -r "$HOME_DIR/.vim"
+  fi
+  if [[ ! -e "$I_XDG_CONFIG_HOME/vim" ]]; then
+    echo -e "Creating $(util::color_path "$I_XDG_CONFIG_HOME/vim") directory"
+    mkdir "$I_XDG_CONFIG_HOME/vim"
+  fi
+  # --- End XDG checks --- #
 
   if [[ ! -f "$PROJECT_DIR/bash/system" ]]; then
     echo -e "Creating empty $(util::color_path "$PROJECT_DIR/bash/system") from template"
@@ -336,7 +354,7 @@ function main() {
   util::create_file_symlink "$PROJECT_DIR/.bashrc"       "$HOME_DIR/.bashrc"
   util::create_file_symlink "$PROJECT_DIR/bash/aliases"  "$I_XDG_CONFIG_HOME/bash/aliases"
   util::create_file_symlink "$PROJECT_DIR/bash/system"   "$I_XDG_CONFIG_HOME/bash/system"
-  util::create_file_symlink "$PROJECT_DIR/.vimrc"        "$HOME_DIR/.vimrc"
+  util::create_file_symlink "$PROJECT_DIR/vim/vimrc"     "$I_XDG_CONFIG_HOME/vim/vimrc"
   util::create_file_symlink "$PROJECT_DIR/starship.toml" "$I_XDG_CONFIG_HOME/starship.toml"
 
   echo "Generating other files"
