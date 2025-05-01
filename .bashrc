@@ -6,9 +6,6 @@ case $- in
     *) return;;
 esac
 
-# Load environment variables
-. "$HOME/.profile"
-
 ## Bash completion
 if ! shopt -oq posix; then
   if [ -f /usr/share/bash-completion/bash_completion ]; then
