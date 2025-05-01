@@ -7,7 +7,7 @@ case $- in
 esac
 
 # Load environment variables
-. ~/.profile
+. "$HOME/.profile"
 
 ## Bash completion
 if ! shopt -oq posix; then
