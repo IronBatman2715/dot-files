@@ -352,6 +352,7 @@ function main() {
   echo "Creating file symlinks"
   util::create_file_symlink "$PROJECT_DIR/.profile"      "$HOME_DIR/.profile"
   util::create_file_symlink "$PROJECT_DIR/.bashrc"       "$HOME_DIR/.bashrc"
+  util::create_file_symlink "$PROJECT_DIR/.bash_profile" "$HOME_DIR/.bash_profile"
   util::create_file_symlink "$PROJECT_DIR/bash/aliases"  "$I_XDG_CONFIG_HOME/bash/aliases"
   util::create_file_symlink "$PROJECT_DIR/bash/system"   "$I_XDG_CONFIG_HOME/bash/system"
   util::create_file_symlink "$PROJECT_DIR/vim/vimrc"     "$I_XDG_CONFIG_HOME/vim/vimrc"
