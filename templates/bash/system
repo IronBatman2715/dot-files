@@ -4,4 +4,4 @@
 #
 # WILL NEED TO MOVE SETUPS HERE MANUALLY AS PROGRAMS TYPICALLY WRITE TO `.bashrc` or `.bash_profile`
 #
-# Ex: adding pnpm to PATH, script to update manually downloaded binaries, etc.
+# Ex: adding to PATH, script to update manually downloaded binaries, etc.
