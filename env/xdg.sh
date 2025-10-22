@@ -10,7 +10,9 @@ export XDG_BIN_HOME="$HOME/.local/bin" # not an official variable, but used by s
 ## Common programs
 
 # bash
-export HISTFILE="$XDG_STATE_HOME/bash/history"
+if [ -n "$BASH_VERSION" ]; then
+  export HISTFILE="$XDG_STATE_HOME/bash/history"
+fi
 
 # starship
 export STARSHIP_CONFIG="$XDG_CONFIG_HOME/starship.toml"
