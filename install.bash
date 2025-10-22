@@ -360,6 +360,7 @@ function main() {
   util::create_file_symlink "$PROJECT_DIR/.profile"      "$HOME_DIR/.profile"
   util::create_file_symlink "$PROJECT_DIR/.bashrc"       "$HOME_DIR/.bashrc"
   util::create_file_symlink "$PROJECT_DIR/.bash_profile" "$HOME_DIR/.bash_profile"
+  util::create_file_symlink "$PROJECT_DIR/.bash_logout"  "$HOME_DIR/.bash_logout"
   util::create_file_symlink "$PROJECT_DIR/env/xdg.sh"    "$I_XDG_CONFIG_HOME/env/xdg.sh"
   util::create_file_symlink "$PROJECT_DIR/bash/aliases"  "$I_XDG_CONFIG_HOME/bash/aliases"
   util::create_file_symlink "$PROJECT_DIR/bash/system"   "$I_XDG_CONFIG_HOME/bash/system"
