@@ -21,7 +21,6 @@ alias lslah="ls -lAh"
 alias gs="git status"
 alias ga="git add"
 alias gc="git commit"
-alias gac="git add . && git commit"
 alias gph="git push"
 alias gpl="git pull"
 alias gf="git fetch"
@@ -31,3 +30,11 @@ alias gl="git log"
 # tar & gzip
 alias mktarball="tar -czvf"
 alias untarball="tar -zxvf"
+
+# use bat over cat
+if command -v bat &> /dev/null; then
+  alias cat="bat"
+elif command -v batcat &> /dev/null; then
+  # debian renames binary to "batcat". See https://github.com/sharkdp/bat/issues/2455
+  alias cat="batcat"
+fi
