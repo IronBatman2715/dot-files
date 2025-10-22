@@ -311,9 +311,12 @@ function main() {
     fi
   fi
   readonly HOME_DIR
+  if [[ $DEBUG == 1 ]]; then
+    echo "[DEBUG] Using $(util::color_path "$HOME_DIR") as home directory"
+  fi
 
-  # assume default XDG config home for installer
   local -r I_XDG_CONFIG_HOME="$HOME_DIR/.config"
+  echo "Assuming XDG Config home to be $(util::color_path "$I_XDG_CONFIG_HOME")"
 
   # --- Start XDG checks --- #
   if [[ ! -e "$I_XDG_CONFIG_HOME" ]]; then
