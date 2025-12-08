@@ -38,3 +38,8 @@ elif command -v batcat &> /dev/null; then
   # debian renames binary to "batcat". See https://github.com/sharkdp/bat/issues/2455
   alias cat="batcat"
 fi
+
+# use eza over ls
+if command -v eza &> /dev/null; then
+  alias ls="eza"
+fi
