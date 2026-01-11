@@ -23,7 +23,7 @@ export GVIMINIT='let $MYGVIMRC = !has("nvim") ? "$XDG_CONFIG_HOME/vim/gvimrc" : 
 export VIMINIT='let $MYVIMRC = !has("nvim") ? "$XDG_CONFIG_HOME/vim/vimrc" : "$XDG_CONFIG_HOME/nvim/init.vim" | so $MYVIMRC'
 
 # wget
-alias wget='wget --hsts-file=$XDG_CACHE_HOME/wget-hsts'
+alias wget='wget --hsts-file=$XDG_STATE_HOME/wget-hsts'
 export WGETRC="$XDG_CONFIG_HOME/wgetrc"
 
 ## Development programs
