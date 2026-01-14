@@ -32,6 +32,9 @@ shopt -s checkwinsize # update LINES and COLUMNS on window resize if necessary
 # Run aliases file if present
 [[ -f "$XDG_CONFIG_HOME/bash/aliases" ]] && . "$XDG_CONFIG_HOME/bash/aliases"
 
+# Some XDG fixes require shell specific methods
+[[ -f "$XDG_CONFIG_HOME/bash/xdg" ]] && . "$XDG_CONFIG_HOME/bash/xdg"
+
 ## Colors
 
 ########################################
