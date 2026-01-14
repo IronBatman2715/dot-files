@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/sh
 
 # https://specifications.freedesktop.org/basedir-spec/latest/
 export XDG_CONFIG_HOME="$HOME/.config"

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 
 # when leaving the console, clear the screen to increase privacy
 if [ "$SHLVL" = 1 ]; then

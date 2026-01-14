@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 
 # Add color support for common commands
 alias ls="ls --color"

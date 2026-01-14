@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 #
 # Install dot files with user prompts for options and verification of install process.
 

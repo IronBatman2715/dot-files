@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 #
 #   Source: https://tldp.org/HOWTO/Bash-Prompt-HOWTO/x329.html
 #
