@@ -4,7 +4,7 @@ Configuration dot files
 
 Supported environments:
 - Git Bash for Windows
-- GNU Linux
+- Bash on GNU Linux
 
 ## Pre-requisites
 
