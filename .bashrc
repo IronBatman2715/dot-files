@@ -79,6 +79,107 @@ eval "$(starship init bash)"
 
 ## Custom functions
 
+function loadenv() {
+  # Default values
+  local -r env_file_default=".env"
+
+  # Usage information
+  local -r usage="Usage: loadenv [OPTIONS] [PATH]
+
+Load environment variables from a file into the current shell or a subshell.
+
+Options:
+  -h, --help       Show this help message
+  -e, --execute COMMAND
+                   Execute COMMAND in a subshell with the env file loaded.
+                   The subshell is created and exited automatically.
+
+Arguments:
+  PATH         Path to the file to load (default: '$env_file_default')
+
+Notes:
+  - Variables are exported automatically (no need for 'export' in .env)
+  - set -a is temporarily enabled only if needed"
+
+  # Parse arguments
+  local env_file=""
+  local execute=""
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      -h|--help)
+        echo "$usage"
+        return 0
+        ;;
+      -e|--execute)
+        execute="$2"
+        shift
+        ;;
+      -*)
+        echo -e "$(_color '0;31' Error): Unknown option $1" >&2
+        echo "$usage" >&2
+        return 1
+        ;;
+      *)
+        if [[ $env_file == "" ]]; then
+          env_file="$1"
+        else
+          echo -e "$(_color '0;31' Error): Too many arguments $(_color '0;33' "$1")" >&2
+          echo "$usage" >&2
+          return 1
+        fi
+        ;;
+    esac
+    shift
+  done
+
+  # Set default(s) if not provided
+  env_file="${env_file:-$env_file_default}"
+
+  readonly env_file
+  readonly execute
+  # Done parsing inputs. Run actual logic
+
+  if [[ "$OSTYPE" != "linux-gnu" ]]; then
+    echo -e "$(_color '0;33' Warning): This has not been tested on your system" >&2
+  fi
+
+  if [ ! -f "$env_file" ]; then
+    echo -e "$(_color '0;31' Error): File $(_color '0;36' "$env_file") not found" >&2
+    return 1
+  fi
+
+  # Execute mode: create subshell and load env and then run command inside it
+  if [[ $execute != "" ]]; then
+    bash -ac "
+      source '$env_file'
+      echo -e 'Loaded $(_color '0;36' "$env_file")'
+      $execute
+    "
+    return $?
+  fi
+
+  # Normal mode: load env in current shell
+
+  local set_a_was_on=0
+  # Check if set -a is already enabled
+  if [[ $- == *a* ]]; then
+    set_a_was_on=1
+  else
+    set -a
+  fi
+  readonly set_a_was_on
+
+  # Source the env file
+  source "$env_file"
+  
+  # Disable set -a only if it wasn't enabled before
+  if [ $set_a_was_on -eq 0 ]; then
+    set +a
+  fi
+
+  echo -e "Loaded $(_color '0;36' "$env_file")"
+}
+
 # Print network information
 function netinfo() {
   local output=''
