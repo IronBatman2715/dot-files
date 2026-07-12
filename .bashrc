@@ -152,7 +152,7 @@ Notes:
   if [[ $execute != "" ]]; then
     bash -ac "
       source '$env_file'
-      echo -e 'Loaded $(_color '0;36' "$env_file")'
+      echo -e 'Loaded $(_color '0;36' "$env_file")' >&2
       $execute
     "
     return $?
@@ -177,7 +177,7 @@ Notes:
     set +a
   fi
 
-  echo -e "Loaded $(_color '0;36' "$env_file")"
+  echo -e "Loaded $(_color '0;36' "$env_file")" >&2
 }
 
 # Print network information
