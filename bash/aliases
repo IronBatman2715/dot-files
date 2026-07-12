@@ -43,3 +43,12 @@ fi
 if command -v eza &> /dev/null; then
   alias ls="eza"
 fi
+
+# use "python" alias for "python3" if and only if not already used
+if ! command -v python &> /dev/null && command -v python3 &> /dev/null; then
+  alias python="python3"
+fi
+# use "py" alias for "python" if and only if not already used
+if ! command -v py &> /dev/null && command -v python &> /dev/null; then
+  alias py="python"
+fi
