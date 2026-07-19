@@ -242,10 +242,70 @@ function util::parse_json_str() {
 }
 
 function main() {
-  # Set DEBUG=1 to run in debug mode (i.e. "DEBUG=1 ./install.bash")
-  if [[ $DEBUG != 1 ]]; then
-    DEBUG=0 # Normal operation
-  fi
+  # Default values
+  local -r xdg_config_home_default=".config"
+
+  # Usage information
+  local -r usage="Usage: install.bash [OPTIONS]
+
+Install these dot files to your system. Creating symlinks, generating files, prompting the user to fill in templates, etc.
+
+Options:
+  -h, --help       Show this help message
+  -d, --debug
+                   Run in debug mode. This will not operate on your home directory, but on a temporary directory it creates.
+  -c, --config PATH    
+                   Set the trailing path of XDG_CONFIG_HOME *after* the home directory (default: '$xdg_config_home_default')"
+
+  # Parse arguments
+  local xdg_config_home=""
+  local DEBUG=0
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      -h|--help)
+        echo "$usage"
+        return 0
+        ;;
+      -d|--debug)
+        if [[ $DEBUG == 0 ]]; then
+          DEBUG=1
+        else
+          echo -e "$(_color '0;31' Error): Duplicate arguments $(_color '0;33' "$1")" >&2
+          echo "$usage" >&2
+          return 1
+        fi
+        ;;
+      -c|--config)
+        if [[ $xdg_config_home == "" ]]; then
+          xdg_config_home="$2"
+          shift
+        else
+          echo -e "$(_color '0;31' Error): Duplicate arguments $(_color '0;33' "$1")" >&2
+          echo "$usage" >&2
+          return 1
+        fi
+        ;;
+      -*)
+        echo -e "$(_color '0;31' Error): Unknown option $1" >&2
+        echo "$usage" >&2
+        return 1
+        ;;
+      *)
+        echo -e "$(_color '0;31' Error): Too many arguments $(_color '0;33' "$1")" >&2
+        echo "$usage" >&2
+        return 1
+        ;;
+    esac
+    shift
+  done
+
+  # Set default(s) if not provided
+  xdg_config_home="${xdg_config_home:-$xdg_config_home_default}"
+
+  readonly xdg_config_home
+  readonly DEBUG
+  # Done parsing inputs. Run actual logic
+
   if [[ $DEBUG == 1 ]]; then
     echo "[DEBUG] Debug mode active!"
   fi
@@ -315,13 +375,13 @@ function main() {
     echo "[DEBUG] Using $(util::color_path "$HOME_DIR") as home directory"
   fi
 
-  local -r I_XDG_CONFIG_HOME="$HOME_DIR/.config"
-  echo "Assuming XDG Config home to be $(util::color_path "$I_XDG_CONFIG_HOME")"
+  local -r I_XDG_CONFIG_HOME="$HOME_DIR/$xdg_config_home"
+  echo "Using $(util::color_path "$I_XDG_CONFIG_HOME") as XDG Config home"
 
   # --- Start XDG checks --- #
   if [[ ! -e "$I_XDG_CONFIG_HOME" ]]; then
     echo -e "Creating $(util::color_path "$I_XDG_CONFIG_HOME") directory"
-    mkdir "$I_XDG_CONFIG_HOME"
+    mkdir -p "$I_XDG_CONFIG_HOME"
   fi
   if [[ ! -e "$I_XDG_CONFIG_HOME/env" ]]; then
     echo -e "Creating $(util::color_path "$I_XDG_CONFIG_HOME/env") directory"
