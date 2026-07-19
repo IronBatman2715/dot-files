@@ -392,13 +392,13 @@ Options:
     mkdir "$I_XDG_CONFIG_HOME/bash"
   fi
   if [[ -e "$HOME_DIR/.vimrc" ]]; then
-    if ! util::yn_prompt "Need to delete $(util::color_path "$HOME_DIR/.vimrc"). Otherwise, "$I_XDG_CONFIG_HOME/vim/vimrc" will be ignored.\n\tDelete $(util::color_path "$HOME_DIR/.vimrc")?"; then
+    if ! util::yn_prompt "Need to delete $(util::color_path "$HOME_DIR/.vimrc"). Otherwise, \"$I_XDG_CONFIG_HOME/vim/vimrc\" will be ignored.\n\tDelete $(util::color_path "$HOME_DIR/.vimrc")?"; then
         exit 1
     fi
     rm "$HOME_DIR/.vimrc"
   fi
   if [[ -e "$HOME_DIR/.vim" ]]; then
-    if ! util::yn_prompt "Need to delete $(util::color_path "$HOME_DIR/.vim"). Otherwise, "$I_XDG_CONFIG_HOME/vim/vimrc" will be ignored.\n\tDelete $(util::color_path "$HOME_DIR/.vim")?"; then
+    if ! util::yn_prompt "Need to delete $(util::color_path "$HOME_DIR/.vim"). Otherwise, \"$I_XDG_CONFIG_HOME/vim/vimrc\" will be ignored.\n\tDelete $(util::color_path "$HOME_DIR/.vim")?"; then
         exit 1
     fi
     rm -r "$HOME_DIR/.vim"
