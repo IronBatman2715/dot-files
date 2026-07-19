@@ -364,6 +364,7 @@ function main() {
   util::create_file_symlink "$PROJECT_DIR/env/xdg.sh"    "$I_XDG_CONFIG_HOME/env/xdg.sh"
   util::create_file_symlink "$PROJECT_DIR/bash/aliases"  "$I_XDG_CONFIG_HOME/bash/aliases"
   util::create_file_symlink "$PROJECT_DIR/bash/system"   "$I_XDG_CONFIG_HOME/bash/system"
+  util::create_file_symlink "$PROJECT_DIR/bash/util"     "$I_XDG_CONFIG_HOME/bash/util"
   util::create_file_symlink "$PROJECT_DIR/bash/xdg"      "$I_XDG_CONFIG_HOME/bash/xdg"
   util::create_file_symlink "$PROJECT_DIR/vim/vimrc"     "$I_XDG_CONFIG_HOME/vim/vimrc"
   util::create_file_symlink "$PROJECT_DIR/starship.toml" "$I_XDG_CONFIG_HOME/starship.toml"
