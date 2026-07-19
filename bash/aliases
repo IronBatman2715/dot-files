@@ -32,23 +32,23 @@ alias mktarball="tar -czvf"
 alias untarball="tar -zxvf"
 
 # use bat over cat
-if command -v bat &> /dev/null; then
+if alias_or_cmd bat; then
   alias cat="bat"
-elif command -v batcat &> /dev/null; then
+elif alias_or_cmd batcat; then
   # debian renames binary to "batcat". See https://github.com/sharkdp/bat/issues/2455
   alias cat="batcat"
 fi
 
 # use eza over ls
-if command -v eza &> /dev/null; then
+if alias_or_cmd eza; then
   alias ls="eza"
 fi
 
 # use "python" alias for "python3" if and only if not already used
-if ! command -v python &> /dev/null && command -v python3 &> /dev/null; then
+if ! alias_or_cmd python && alias_or_cmd python3; then
   alias python="python3"
 fi
 # use "py" alias for "python" if and only if not already used
-if ! command -v py &> /dev/null && command -v python &> /dev/null; then
+if ! alias_or_cmd py && alias_or_cmd python; then
   alias py="python"
 fi

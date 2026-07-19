@@ -28,6 +28,7 @@ HISTFILESIZE=200
 shopt -s checkwinsize # update LINES and COLUMNS on window resize if necessary
 
 # Add helpers/custom tools
+# MUST run before other custom files, as they can use helpers defined here
 [[ -f "$XDG_CONFIG_HOME/bash/util" ]] && . "$XDG_CONFIG_HOME/bash/util"
 
 # Run aliases file if present

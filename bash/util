@@ -39,6 +39,61 @@ function _color() {
 
 ## Custom functions
 
+function alias_or_cmd() {
+  # Default values
+
+  # Usage information
+  local -r usage="Usage: alias_or_cmd [OPTIONS] [CMD]
+
+Check if the input CMD points to an existing alias or executable.
+
+Options:
+  -h, --help       Show this help message
+
+Arguments:
+  CMD              Name of the alias or executable (default: stdin)"
+
+  # Parse arguments
+  local input=""
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      -h|--help)
+        echo "$usage"
+        return 0
+        ;;
+      -*)
+        echo -e "$(_color '0;31' Error): Unknown option $1" >&2
+        echo "$usage" >&2
+        return 1
+        ;;
+      *)
+        if [[ $input == "" ]]; then
+          input="$1"
+        else
+          echo -e "$(_color '0;31' Error): Too many arguments $(_color '0;33' "$1")" >&2
+          echo "$usage" >&2
+          return 1
+        fi
+        ;;
+    esac
+    shift
+  done
+
+  # Set default(s) if not provided
+  if [[ -z "$input" ]]; then
+    read -r input
+  fi
+
+  readonly input
+  # Done parsing inputs. Run actual logic
+
+  if type "$input" &>/dev/null; then
+    return 0
+  else
+    return 1
+  fi
+}
+
 function loadenv() {
   # Default values
   local -r env_file_default=".env"
