@@ -126,8 +126,14 @@ Notes:
         return 0
         ;;
       -e|--execute)
-        execute="$2"
-        shift
+        if [[ $execute == "" ]]; then
+          execute="$2"
+          shift
+        else
+          echo -e "$(_color '0;31' Error): Duplicate options $(_color '0;33' "$1")" >&2
+          echo "$usage" >&2
+          return 1
+        fi
         ;;
       -*)
         echo -e "$(_color '0;31' Error): Unknown option $1" >&2
@@ -138,7 +144,7 @@ Notes:
         if [[ $env_file == "" ]]; then
           env_file="$1"
         else
-          echo -e "$(_color '0;31' Error): Too many arguments $(_color '0;33' "$1")" >&2
+          echo -e "$(_color '0;31' Error): Duplicate arguments $(_color '0;33' "$1")" >&2
           echo "$usage" >&2
           return 1
         fi

@@ -270,7 +270,7 @@ Options:
         if [[ $DEBUG == 0 ]]; then
           DEBUG=1
         else
-          echo -e "$(_color '0;31' Error): Duplicate arguments $(_color '0;33' "$1")" >&2
+          echo -e "$(_color '0;31' Error): Duplicate options $(_color '0;33' "$1")" >&2
           echo "$usage" >&2
           return 1
         fi
@@ -280,7 +280,7 @@ Options:
           xdg_config_home="$2"
           shift
         else
-          echo -e "$(_color '0;31' Error): Duplicate arguments $(_color '0;33' "$1")" >&2
+          echo -e "$(_color '0;31' Error): Duplicate options $(_color '0;33' "$1")" >&2
           echo "$usage" >&2
           return 1
         fi
