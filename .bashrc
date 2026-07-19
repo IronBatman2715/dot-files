@@ -6,7 +6,7 @@ case $- in
     *) return;;
 esac
 
-## Bash completion
+# Bash completion
 if ! shopt -oq posix; then
   if [ -f /usr/share/bash-completion/bash_completion ]; then
     . /usr/share/bash-completion/bash_completion
@@ -37,10 +37,7 @@ shopt -s checkwinsize # update LINES and COLUMNS on window resize if necessary
 # Some XDG fixes require shell specific methods
 [[ -f "$XDG_CONFIG_HOME/bash/xdg" ]] && . "$XDG_CONFIG_HOME/bash/xdg"
 
-
-## Prompt
-
-# https://github.com/starship/starship
+# Prompt (https://github.com/starship/starship)
 eval "$(starship init bash)"
 
 # System specific setups/scripts.
