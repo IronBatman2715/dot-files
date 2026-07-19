@@ -142,6 +142,46 @@ Notes:
 
 # Print network information
 function netinfo() {
+  # Default values
+
+  # Usage information
+  local -r usage="Usage: netinfo [OPTIONS]
+
+Print network information of current machine.
+
+Options:
+  -h, --help       Show this help message
+
+Arguments:
+
+Notes:
+  - This will print your public external IP address. Be careful"
+
+  # Parse arguments
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      -h|--help)
+        echo "$usage"
+        return 0
+        ;;
+      -*)
+        echo -e "$(_color '0;31' Error): Unknown option $1" >&2
+        echo "$usage" >&2
+        return 1
+        ;;
+      *)
+        echo -e "$(_color '0;31' Error): Too many arguments $(_color '0;33' "$1")" >&2
+        echo "$usage" >&2
+        return 1
+        ;;
+    esac
+    shift
+  done
+
+  # Set default(s) if not provided
+
+
+  # Done parsing inputs. Run actual logic
   local output=''
 
   output+="$(_color '0;36' 'DATE'): $(date)"
